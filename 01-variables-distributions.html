@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>1&nbsp; Variables and distributions – The Model with a Thousand Faces</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./02-probability-hypothesis-testing.html" rel="next">
+<link href="./index.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-d3f7f8e73c8d287b30bcf59c2b563615.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01-variables-distributions.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Variables and distributions</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">The Model with a Thousand Faces</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About me and this book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01-variables-distributions.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Variables and distributions</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02-probability-hypothesis-testing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Probability distributions and hypothesis testing</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-first-statistical-tests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Baby’s first statistical tests</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04-correlation-regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Correlation and Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05-tests-or-models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Are these statistical tests or prediction models?</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06-differences-between-means.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Differences between sample means</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07-repeated-measures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Repeated measures</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08-factorial-anova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Factorial ANOVA</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09-general-linear-model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The General Linear Model</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10-chi-square-fisher.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Chi-square and Fisher’s Exact Test</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11-multiple-regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Multiple Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./12-glm-moderation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">The General Linear Model and “Moderation”</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#types-of-variables" id="toc-types-of-variables" class="nav-link active" data-scroll-target="#types-of-variables"><span class="header-section-number">1.1</span> Types of variables</a>
+  <ul class="collapse">
+  <li><a href="#categorical-variables" id="toc-categorical-variables" class="nav-link" data-scroll-target="#categorical-variables"><span class="header-section-number">1.1.1</span> Categorical variables</a></li>
+  <li><a href="#ordinal-variables" id="toc-ordinal-variables" class="nav-link" data-scroll-target="#ordinal-variables"><span class="header-section-number">1.1.2</span> Ordinal variables</a></li>
+  <li><a href="#continuous-variables" id="toc-continuous-variables" class="nav-link" data-scroll-target="#continuous-variables"><span class="header-section-number">1.1.3</span> Continuous variables</a></li>
+  <li><a href="#interval-and-ratio-continuous-variables" id="toc-interval-and-ratio-continuous-variables" class="nav-link" data-scroll-target="#interval-and-ratio-continuous-variables"><span class="header-section-number">1.1.4</span> Interval and ratio continuous variables</a></li>
+  <li><a href="#working-with-continuous-variables" id="toc-working-with-continuous-variables" class="nav-link" data-scroll-target="#working-with-continuous-variables"><span class="header-section-number">1.1.5</span> Working with continuous variables</a></li>
+  </ul></li>
+  <li><a href="#univariate-distributions-of-continuous-variables-and-statistics-for-describing-them" id="toc-univariate-distributions-of-continuous-variables-and-statistics-for-describing-them" class="nav-link" data-scroll-target="#univariate-distributions-of-continuous-variables-and-statistics-for-describing-them"><span class="header-section-number">1.2</span> Univariate distributions of continuous variables and statistics for describing them</a>
+  <ul class="collapse">
+  <li><a href="#measures-of-central-tendency" id="toc-measures-of-central-tendency" class="nav-link" data-scroll-target="#measures-of-central-tendency"><span class="header-section-number">1.2.1</span> Measures of central tendency</a></li>
+  <li><a href="#skew-the-means-only-weakness" id="toc-skew-the-means-only-weakness" class="nav-link" data-scroll-target="#skew-the-means-only-weakness"><span class="header-section-number">1.2.2</span> Skew (the mean’s only weakness!)</a></li>
+  <li><a href="#outliers-the-means-other-only-weakness" id="toc-outliers-the-means-other-only-weakness" class="nav-link" data-scroll-target="#outliers-the-means-other-only-weakness"><span class="header-section-number">1.2.3</span> Outliers (The mean’s <em>other</em> only weakness!)</a></li>
+  </ul></li>
+  <li><a href="#multimodal-distributions" id="toc-multimodal-distributions" class="nav-link" data-scroll-target="#multimodal-distributions"><span class="header-section-number">1.3</span> Multimodal distributions</a>
+  <ul class="collapse">
+  <li><a href="#measures-of-dispersion" id="toc-measures-of-dispersion" class="nav-link" data-scroll-target="#measures-of-dispersion"><span class="header-section-number">1.3.1</span> Measures of dispersion</a></li>
+  </ul></li>
+  <li><a href="#sigma-notation" id="toc-sigma-notation" class="nav-link" data-scroll-target="#sigma-notation"><span class="header-section-number">1.4</span> Sigma notation</a></li>
+  <li><a href="#calculating-a-standard-deviation" id="toc-calculating-a-standard-deviation" class="nav-link" data-scroll-target="#calculating-a-standard-deviation"><span class="header-section-number">1.5</span> Calculating a standard deviation</a></li>
+  <li><a href="#sample-statistics-versus-population-parameters" id="toc-sample-statistics-versus-population-parameters" class="nav-link" data-scroll-target="#sample-statistics-versus-population-parameters"><span class="header-section-number">1.6</span> Sample statistics versus population parameters</a></li>
+  <li><a href="#bivariate-distributions" id="toc-bivariate-distributions" class="nav-link" data-scroll-target="#bivariate-distributions"><span class="header-section-number">1.7</span> Bivariate distributions</a></li>
+  <li><a href="#independent-and-dependent-variables-ivs-and-dvs" id="toc-independent-and-dependent-variables-ivs-and-dvs" class="nav-link" data-scroll-target="#independent-and-dependent-variables-ivs-and-dvs"><span class="header-section-number">1.8</span> Independent and dependent variables (IVs and DVs)</a>
+  <ul class="collapse">
+  <li><a href="#correlational-or-observational-vs.-experimental-research-designs" id="toc-correlational-or-observational-vs.-experimental-research-designs" class="nav-link" data-scroll-target="#correlational-or-observational-vs.-experimental-research-designs"><span class="header-section-number">1.8.1</span> Correlational (or observational) vs.&nbsp;Experimental research designs</a></li>
+  <li><a href="#multiple-ivs" id="toc-multiple-ivs" class="nav-link" data-scroll-target="#multiple-ivs"><span class="header-section-number">1.8.2</span> Multiple IVs?</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Variables and distributions</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>A variable is something that varies. In the social sciences, this is usually a characteristic or trait that varies from person-to-person. Anything that can be measured, counted, or categorized can be a variable: time, height, weight. Many psychological attributes can be measured: self-esteem, intelligence, or “the degree to which I feel like I have a sense of purpose in my life.”</p>
+<p>Variables can sometimes take on only a few values (“male, female, other” or “republican, democrat, independent”). Sometimes variables can take on infinitely many values, at least in theory. If you’re studying weight loss, one participant in your study might start out weighing 250 pounds. Another participant might weigh 251 pounds. Another might weigh 251.5 or 251.000000005. Measuring weight to such a high level of precision probably isn’t necessary, but the variable “weight” can theoretically take on any value, with many, many decimal places included in the number.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/row column.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="The first four rows of a data set, with rows labeled as observations and columns labeled as variables"></p>
+</figure>
+</div>
+<p>In the image above, we see the first 4 rows of a data set. Each row represents one observation (or “case” or “person”). Each column represents one variable characterizing each observation: their individual sex, age, self-esteem.</p>
+<section id="types-of-variables" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="types-of-variables"><span class="header-section-number">1.1</span> Types of variables</h2>
+<p>Learning what types of variables you’re working with helps you identify which statistical tests are appropriate to use on them. Suppose you wanted to know whether male and female students tended, on average, to have a different age. In this scenario, it would be appropriate to perform an independent samples <em>t</em>-test on these data. But suppose you wanted to know if a student’s age is associated with some difference in a student’s self-esteem? In this case, an independent samples <em>t</em>-test would make no sense. You’d want to perform a correlation (or regression) analysis instead.</p>
+<p>An independent samples <em>t</em> test is used to examine whether two sample means are different from one another. A correlation (or regression) analysis is (usually) used to examine whether two continuous variables are associated with one another.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/levels.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="The levels of measurement arranged from categorical to ordinal to continuous, with continuous split into interval and ratio"></p>
+</figure>
+</div>
+<p>In the image above, we see the lowest end of the measurement spectrum on the left: categorical variables. After that (to the right), ordinal variables have a little bit more measurement acuity compared to categorical variables. In other words, ordinal variables give more information compared to categorical variables. Finally, at the top of the measurement scale are continuous variables, which can be further subdivided into interval and ratio scales. Continuous variables give more information than ordinal and categorical variables.</p>
+<section id="categorical-variables" class="level3" data-number="1.1.1">
+<h3 data-number="1.1.1" class="anchored" data-anchor-id="categorical-variables"><span class="header-section-number">1.1.1</span> Categorical variables</h3>
+<p>Categorical variables are sometimes also called “nominal” variables. “Nominal” means “relating to names”. This makes sense because nominal/categorical variables represent discrete characteristics of your observations (people). One example of a categorical variable would be “car manufacturer”. Levels of this variable could be “Ford”, “Chevrolet”, “Toyota”, etc. If I’m comparing parental wealth between business majors and non-business-majors, then one of my variables is categorical: category 1 = business major, category 2 = non-business major. (By the way, we would use an independent samples <em>t</em>-test to address this question.)</p>
+<p>It’s important to note that categories should be <strong>mutually exclusive</strong> (no one can be in multiple categories) and <strong>mutually exhaustive</strong> (all possible categories are considered). A demographic survey would fail to be mutually exclusive if it asked, “What is your religion, Christian, Catholic, Methodist, Buddhist, …” This is because “Catholic” and “Methodist” are both types of “Christian”. Thus, someone could be in multiple categories at once. They could be a Catholic AND a Christian at the same time. A demographic survey would fail to be mutually exhaustive if it asked, “What’s your ethnicity, Black, White, or Asian?” What if your respondent is Indian, Middle Eastern, Native American, or identifies with multiple identities?</p>
+<p>Categorical data like these are best presented as percentages, e.g., “The present sample was 54.10% business majors and 45.9% non-business majors.”</p>
+<p><strong>Also note that categorical variables have no inherent ordering to them.</strong> One car manufacturer isn’t necessarily “better than” another. “Business major” isn’t “less than” or “above” non-business majors. Catholics are not in charge of Methodists, and Methodists are not in charge of Mormons. Categorical variables are <strong>horizontal</strong> in that sense: Differences between category members are not <em>hierarchical</em> differences, but more “apples vs.&nbsp;oranges” differences.</p>
+</section>
+<section id="ordinal-variables" class="level3" data-number="1.1.2">
+<h3 data-number="1.1.2" class="anchored" data-anchor-id="ordinal-variables"><span class="header-section-number">1.1.2</span> Ordinal variables</h3>
+<p>Ordinal variables are a lot like categorical variables except that the different levels <strong>do</strong> have an inherent ordering. For instance, “Sophomore” comes after “Freshman” and “Senior” comes after “Junior”. Thus, grade classification is an ordinal variable, not merely a categorical one.</p>
+<p>Other ordinal variables include:</p>
+<ol type="1">
+<li>Rankings: LSU is #1 in the nation, Alabama is #2, Georgia is #3, and so on.</li>
+<li>Positions in an organization: CEO &gt; Vice President &gt; Middle management, etc.</li>
+</ol>
+<p>One thing to keep in mind about ordinal variables is that there is no measurable difference between category members. If my horse won 1st place in a race and yours won 2nd, this doesn’t tell you <strong><em>by how much</em></strong>. My horse could’ve beaten yours in a “photo finish”, just barely eking out a win. Alternatively, my horse could’ve won by a landslide. If LSU is the #1 (football) school in the country, it might be “neck-and-neck” with Alabama, Georgia, and the other top teams. Or, LSU could be in a league of its own, greatly outclassing the other teams. In other words, ordinal variables convey only the order (from “highest” to “lowest”) but not the actual “size” of these differences between them.</p>
+</section>
+<section id="continuous-variables" class="level3" data-number="1.1.3">
+<h3 data-number="1.1.3" class="anchored" data-anchor-id="continuous-variables"><span class="header-section-number">1.1.3</span> Continuous variables</h3>
+<p>A continuous variable is a variable that can (theoretically) take on any value. Many variables are treated as if they are continuous even though, in practice, they aren’t. Age, for instance, is almost always treated as if it is a continuous variable because it can take on many values: 18, 27, 38, 70. But no one is ever <strong><em>exactly</em></strong> 18 years old and zero seconds (or zero microseconds, and so on). You know how kids will say things like, “I’m 8 and a half” or “I’m 7 and 3 quarters”? In theory, you can be 35 years, 7 months, 3 weeks, 1 day, 3 hours, 23 minutes, 4 seconds, etc., years old. Suffice it to say, a continuous variable has many more levels than a categorical or ordinal variable, so much so that you might as well treat them as natural numbers.</p>
+</section>
+<section id="interval-and-ratio-continuous-variables" class="level3" data-number="1.1.4">
+<h3 data-number="1.1.4" class="anchored" data-anchor-id="interval-and-ratio-continuous-variables"><span class="header-section-number">1.1.4</span> Interval and ratio continuous variables</h3>
+<div class="callout callout-style-default callout-caution callout-titled" title="Challenge mode">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>Challenge mode
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>There are two subtypes of continuous variable: interval and ratio. Interval variables are recorded as continuous numbers (e.g., 1.23, 3.5, 7). Despite appearances though, these numbers can’t really be interpreted exactly like natural numbers. On an interval scale, the gap between “1.23” and “2.23” is not <em>necessarily</em> equivalent to the gap between “2.23” and “3.23”.</p>
+<p>On the Beck Depression Inventory (BDI), one person could score a 5 and another person might score a 10. Since the BDI is on an <em>interval</em> scale, we cannot say that the first person is half as depressed as the second person or that the second person is twice as depressed as the first one.</p>
+<p>The interval scale could be thought of as a pseudo-continuous scale. The numbers themselves can take on a wide range of values, but those values aren’t equally spaced from each other. You could think of an interval scale as being an ordinal scale with many, many levels.</p>
+<p>A <em>ratio</em> scale, on the other hand, maintains many of the characteristics of natural numbers that we are familiar with. Someone who is 6 feet tall <em>really is</em> twice the height of someone who is 3 feet tall. The difference between people who weigh 200 pounds and 215 pounds <em>really is the same difference</em> as between people who weigh 215 pounds and 230 pounds.</p>
+<p>Time is one of the most commonly used ratio variables in psychology (e.g., reaction time). If a person has a reaction time of zero, they did not react. If someone scored a 0 on the BDI, though, we cannot say they have zero depression. However, if one person has a reaction time of 500 milliseconds and another has a reaction time of 1000 milliseconds, we <strong>are</strong> able to say that the first person was twice as fast as the second person.</p>
+</div>
+</div>
+</section>
+<section id="working-with-continuous-variables" class="level3" data-number="1.1.5">
+<h3 data-number="1.1.5" class="anchored" data-anchor-id="working-with-continuous-variables"><span class="header-section-number">1.1.5</span> Working with continuous variables</h3>
+<p>Most variables that psychologists use in their research are treated as if they are continuous even though, technically, they aren’t. The underlying mathematical assumptions/models are still usually appropriate though.</p>
+<p>Psychologists traditionally present the mean and standard deviation for the continuous variables in their studies. (You’ll learn what these are in detail later on.) If continuous variables are presented visually, then a histogram is usually appropriate.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/age_hist.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="A histogram displaying the frequencies of different ages within a sample"></p>
+</figure>
+</div>
+<p>In the figure above, the horizontal x-axis represents different values for age. The vertical y-axis represents how often people in the data had ages of specific values.</p>
+</section>
+</section>
+<section id="univariate-distributions-of-continuous-variables-and-statistics-for-describing-them" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="univariate-distributions-of-continuous-variables-and-statistics-for-describing-them"><span class="header-section-number">1.2</span> Univariate distributions of continuous variables and statistics for describing them</h2>
+<p>Suppose we wanted to do some research and examine whether business majors come from more wealthy families compared to non-business majors.</p>
+<p>We usually don’t have access to the parental wealth of ALL business and non-business majors. That’s why we draw random samples from the larger population and calculate <em>average</em> parental wealth for business majors and <em>average</em> parental wealth for non-business majors. When you randomly sample observations of a variable and record all the values, you end up with a “sample distribution” for that variable. Basically, the data have a certain “shape”. We could also call this a “univariate, sample distribution” because it is the distribution of only one variable: (“uni” = 1) + (“variate” = variable).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/weight_dist.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:40.0%" alt="A stack of weights at a gym with different amounts of wear proportional to how often each weight is used"></p>
+</figure>
+</div>
+<p>In the picture above, you can see that people use some weight settings a lot more than others. The most frequently used settings show more wear and tear. This is a naturally occurring representation of the distribution of settings people use on this machine. The amount of wear is proportional to the amount of times people use a particular setting on the machine. The histogram of ages within a sample is another example of a sample distribution. The visual gives you an idea of where most people’s ages tend to cluster (around 18 to 21) and how spread out the ages were.</p>
+<section id="measures-of-central-tendency" class="level3" data-number="1.2.1">
+<h3 data-number="1.2.1" class="anchored" data-anchor-id="measures-of-central-tendency"><span class="header-section-number">1.2.1</span> Measures of central tendency</h3>
+<p>There are standard numbers we use to describe different aspects of a sample distribution (i.e., the shape of our sample data).</p>
+<p>It’s often useful to specify the “central tendency” (or “peak”) of a distribution. You might be familiar with the mean, median, and mode from high school. If not, no big deal. I review them below.</p>
+<p>The mode is the value in the data that occurs most frequently. In the hypothetical age data above, the mode would be 18. (Note: Sometimes there is no single value that occurs most often. Sometimes no value occurs more than once. That’s why the mode can be a tricky thing to calculate.)</p>
+<p>Median: If you order the data from the lowest to the highest value, then the median is either the value that occurs in the middle of the sequence (if there’s an odd number of data points) or it’s the average of the two data points that share the middle of a data set (if there’s an even number of data points). In the hypothetical age data above, the median would be 19. Notice that the mode and the median are not the same, though they’re close.</p>
+<p>Finally, there is the average (or “arithmetic mean”, or just “mean”. Few people, including myself, consistently use the same name.) The average is the sum of all the data points divided by the number of data points. In the hypothetical example above, the mean would be 19.94. Again, we see that these different measures of central tendency are close, but not quite the same.</p>
+</section>
+<section id="skew-the-means-only-weakness" class="level3" data-number="1.2.2">
+<h3 data-number="1.2.2" class="anchored" data-anchor-id="skew-the-means-only-weakness"><span class="header-section-number">1.2.2</span> Skew (the mean’s only weakness!)</h3>
+<p>The reason different measures of central tendency aren’t always quite the same has to do with skewness. When a distribution is perfectly symmetrical, the peak (or center) of the distribution has two equal slopes going down both sides of it (picture below, on the left). With a skewed distribution, these two slopes are uneven (like in the picture below on the right).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/skew_dist.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Two distributions, one symmetrical and the other skewed to the right"></p>
+</figure>
+</div>
+<p>When the slope on the right (on the higher, positive) side of the distribution is skewing the data, we call that “positively skewed” or “right skewed.” Income and reaction time data tend to be positively skewed. Exam scores for a difficult test would be positively skewed as well.</p>
+<p>When the slope on the left (the lower, negative) side of the distribution is skewing the data, we call that “negatively skewed” or “left skewed.” Exam scores for an easy test would be negatively skewed.</p>
+<p>The mean tends to follow the skew of a distribution. The mode is always at the peak (if there is only one mode) and the median usually falls somewhere between the two.</p>
+<p>Most statistical analyses use the mean as its default measure of central tendency. In many cases, this is okay. However, if the data you are analyzing are heavily skewed, then the mean isn’t really a good representative for the central tendency of the data.</p>
+</section>
+<section id="outliers-the-means-other-only-weakness" class="level3" data-number="1.2.3">
+<h3 data-number="1.2.3" class="anchored" data-anchor-id="outliers-the-means-other-only-weakness"><span class="header-section-number">1.2.3</span> Outliers (The mean’s <em>other</em> only weakness!)</h3>
+<p>It’s tricky to define what <em>exactly</em> an “outlier” is. You could say it’s a data point whose value is very different from the others. More than that, an outlier is often considered a data point that was not supposed to be in the data set because it was not sampled from the intended population.</p>
+<p>For example, let’s say you were hosting a support group for men who are trying to lose weight. Twelve men show up, but a young child also shows up. The two histograms below show the weight of each person who showed up, either including the child (left) or not (right).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/outlier_hists.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Two histograms, one with an outlier and one without an outlier"></p>
+</figure>
+</div>
+<p>The average weight of the support group is 261.51 pounds if you don’t include the child, who is an outlier. If you <strong>do</strong> include the child, the average weight of the group is 244.08 pounds. That’s a little more than a 17-pound difference hinging on whether you include the outlier or not. The median weight for just the men is 262.10 pounds. If you include the child, it’s practically the same, 261.27. Not a very big difference.</p>
+<p>That was a simplistic example, but it demonstrates a general point: data points that are very different from the others or ones that don’t truly belong in your data set can substantially bias the mean. The mean will shrink (or inflate) depending on whether the outlier is lower (or higher) than the rest of the data points.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/outlier_meme.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="A meme where a man labelled &quot;mean&quot; is looking at a woman labelled &quot;outlier&quot; while another woman the man is with (labelled &quot;median&quot;) looks upset that the man is paying attention to the &quot;outlier&quot;."></p>
+</figure>
+</div>
+</section>
+</section>
+<section id="multimodal-distributions" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="multimodal-distributions"><span class="header-section-number">1.3</span> Multimodal distributions</h2>
+<p>If a distribution has only one “peak”, it is called “unimodal” because it has only one mode. If a distribution has two “peaks”, it is called “bimodal”. More generally, if a distribution has multiple “peaks” (or modes), it is referred to as “multimodal”. Multimodal data can belie some important aspects of your data. For instance, multiple modes might imply that there are sub-groups in your data. Which of the following products from Amazon in the figure below would you prefer to buy?</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/amazon_products.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%" alt="Two histograms showing the distribution of ratings given for two different products"></p>
+</figure>
+</div>
+<p>Both of these products have the same average user rating (3.3). They both have roughly the same number of ratings. The option on the left, however, has this little extra clump of people who gave the product 1-star ratings. The option on the right is basically flat. For the product on the left, it seems like most people liked it, but there was maybe a small sub-group of people who hated it. It might be important to identify these people and understand if there’s something unique about them that distinguishes them from the general population (or customer base).</p>
+<p>Let’s look at another example. Let’s say I had a class with 100 “normal” students. They’re about to take a statistics exam. However, right before the exam starts, 20 professional statisticians walk in and also take the exam. Below is a histogram of hypothetical grades that might result from this scenario.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/20_statisticians.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%" alt="A distribution of grades with an odd shape"></p>
+</figure>
+</div>
+<p>Can you see the two modes? It’s like a mountain with two peaks. The main peak represents the 100 “normal” students. The second peak (the smaller one off to the right) represents the statisticians, who scored either a perfect score, close to perfect, or even got over 100 points in some cases.</p>
+<section id="measures-of-dispersion" class="level3" data-number="1.3.1">
+<h3 data-number="1.3.1" class="anchored" data-anchor-id="measures-of-dispersion"><span class="header-section-number">1.3.1</span> Measures of dispersion</h3>
+<p>It’s important to know where the distribution of your data are centrally located. It’s also important, though, to know how spread out (or “dispersed”) the data are. When there is low dispersion in the data, then most of the data points are pretty similar to one another. If there is high dispersion, then the data points take a larger variety of values. Low dispersion means all the data’s about the same. High dispersion means the data are “all over the place”.</p>
+<p>Imagine if you’re trying to make purchases for an annual event based on data from previous years. If the annual costs were $1,000, $1,100, and $900, you’d feel pretty confident in projecting this year’s budget of “roughly $1,000”. But what if previous years cost $300, $3,500, and $1,000? You’d feel a lot less confidence in projecting this year’s budget!</p>
+<p>If the data you’re dealing with aren’t very spread out, then your predictions and assessments can be made with much confidence. If the data are highly dispersed, though, then your predictions and assessments are going to be highly uncertain.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/dispersion.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%" alt="Two distributions of data, one with high dispersion and one with low dispersion"></p>
+</figure>
+</div>
+<p>In the figure above, I have two different distributions of exam grades. Both distributions have the same central tendency: most students earned a 75 on the exam. However, the distributions have different levels of dispersion. The black distribution has a standard deviation (“SD”) of 7 whereas the red distribution has an SD of 12. (We’re going to learn more about SDs soon). Students in the first class tend to get scores that are pretty close to the average (75). Students in the red class also tend to get scores around 75, but there is a lot more variation in scores.</p>
+<p>Which exam would you rather take?</p>
+<p>There are quite a few ways to quantify the amount of dispersion in a variable. I cover 2 of them in this book. The simpler one is called “spread” (sometimes called the “range”). Spread is just the highest data value minus the lowest data value. So, in a small data set like [10, 20, 30, 40], the spread would be 40 - 10 = 30. It’s just the difference between the highest and the lowest data value.</p>
+<p>The most common measure of dispersion is the “standard deviation”. For now, I’m only going to give a verbal “gist” of what a standard deviation is. I’m going to cover the actual math further down and introduce some special notation (try to contain your excitement). The standard deviation can roughly be defined as “the average distance between each data point and the mean.” That’s not <em>literally</em> what it is but it’s not a bad definition to start off with. We’ll also see in subsequent chapters that standard deviations are useful for conducting statistical tests.</p>
+</section>
+</section>
+<section id="sigma-notation" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="sigma-notation"><span class="header-section-number">1.4</span> Sigma notation</h2>
+<p>So far I have been giving what might be called “verbal equations” for certain concepts. Examples include, “the mean of a variable is the sum of all the data points divided by the number of data points.” Verbal descriptions like these are okay when we’re dealing with very simple concepts, but they’ll quickly become a nuisance. That’s why it’s ultimately better to use symbols and equations. This will require a small investment of effort up front, but learning the following notation will pay enormous dividends as we get further into the book.</p>
+<p>Take a look at this equation for the mean:</p>
+<p><span class="math display">\[
+\bar{x} = \frac{\sum x}{N}
+\]</span></p>
+<p>This might look a bit strange, but if we break it down into its parts, it’s very simple. <span class="math inline">\(\bar{x}\)</span> represents the sample mean. <span class="math inline">\(\sum{}\)</span> is the capital Greek letter “sigma”. This is where the term “sigma notation” comes from. “<span class="math inline">\(\sum{}\)</span>” means “Add up everything to the right of me”. <span class="math inline">\(x\)</span> represents every element in a set, where that set is called “x”. Let’s say, your data are…</p>
+<p><span class="math display">\[
+x = [1, 2, 3, 4]
+\]</span></p>
+<p>Therefore, <span class="math inline">\(\sum{x}\)</span> would be equal to…</p>
+<p><span class="math display">\[
+1 + 2 + 3 + 4 = 10
+\]</span></p>
+<p>Therefore, <span class="math inline">\(\sum{x} = 10\)</span>.</p>
+<p>This notation becomes handy if you are performing the same operation on each data point and adding them as you go. For instance, many calculations in statistics involve the “sum of squares”. This is where you square each data point and add up all these “squared points” together.</p>
+<p><span class="math display">\[
+\begin{aligned}
+\sum{x^2} &amp;= 1^2+2^2+3^2+4^2 \\
+&amp;= 1+4+9+16 = 30
+\end{aligned}
+\]</span></p>
+<p>Therefore, <span class="math inline">\(\sum{x^2}\)</span> is equal to 30.</p>
+</section>
+<section id="calculating-a-standard-deviation" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="calculating-a-standard-deviation"><span class="header-section-number">1.5</span> Calculating a standard deviation</h2>
+<p>To calculate the standard deviation, we are going to calculate the difference between each data point and the mean, <span class="math inline">\(\bar{x}\)</span>. If we wanted to “add up the differences between each data point and the mean”, we’d write this as</p>
+<p><span class="math display">\[
+\sum{(x-\bar{x})}
+\]</span></p>
+<p>Each distance between a data point and its mean is a “deviation”. Since the mean of [1, 2, 3, 4] is 2.5, then <span class="math inline">\(\bar{x}\)</span> is equal to 2.5. Therefore, <span class="math inline">\(\sum{(x-\bar{x})}\)</span> is equal to</p>
+<p><span class="math display">\[
+(1-2.5) + (2-2.5) + (3-2.5) + (4-2.5) = 0
+\]</span></p>
+<p>Fun fact: <span class="math inline">\(\sum{(x-\bar{x})}\)</span> will <strong><em>ALWAYS</em></strong> add up to 0. In other words, if you add up all the deviations in a data set, you will always get 0. This is because some deviations are positive and some are negative. The positive and negative deviations end up cancelling each other out every time and summing to 0. That’s why we add up the “squared deviations”:</p>
+<p><span class="math display">\[
+(1-2.5)^2 + (2-2.5)^2 + (3-2.5)^2 + (4-2.5)^2 = 5
+\]</span></p>
+<p>By squaring each deviation, we force all the numbers to be positive. Remember, “a positive times a positive is positive” and “a negative times a negative is positive”. This sum of squared deviations is often referred to as the “sum of squares”. If your data doesn’t contain any sub-groups, and we just want the overall “sum of squares”, we can denote this as <span class="math inline">\(SS_{Total}\)</span>. This is also called the “sum of squares total” or “total sum of squares”. So remember:</p>
+<p><span class="math display">\[
+SS_{Total} = \sum(x-\bar{x})^2
+\]</span></p>
+<p>Do you know what puts the “standard” in “standard deviation”? It’s the fact that we want the <em>average</em> deviation. So, like with other averages, we divide by N:</p>
+<p><span class="math display">\[
+\frac{SS_{Total}}{N}
+\]</span></p>
+<p>We’re almost done. I swear! The equation above gives us the average <strong><em>squared</em></strong> deviation, but we want the average deviation (<strong><em>not</em></strong> squared). In fact, what we have so far is its own statistic: <strong>the variance</strong>. The variance is symbolized with a <span class="math inline">\(\sigma^2\)</span> for the population and a <span class="math inline">\(s^2\)</span> for samples. Notice that they both have a “<span class="math inline">\(^2\)</span>” in them? The variance really is the squared version of what we actually want, <span class="math inline">\(\sigma\)</span> by itself or <span class="math inline">\(s\)</span> by itself.</p>
+<p>We need to “unsquare” what we have “squared”. To do this, you take the square root of the whole thing:</p>
+<p><span class="math display">\[
+\sqrt{\frac{SS_{Total}}{N}}
+\]</span></p>
+<p>There it is! Our final equation for the standard deviation. Isn’t it beautiful?</p>
+<p>The standard deviation for [1, 2, 3, 4], then, is:</p>
+<p><span class="math display">\[
+\sqrt{\frac{(1-2.5)^2 + (2-2.5)^2 + (3-2.5)^2 + (4-2.5)^2}{4}}
+\]</span></p>
+<p>N is equal to 4 because there are 4 data points in [1, 2, 3, 4]. Since we also know (from our above calculations) that the numerator (<span class="math inline">\(SS_{Total}\)</span>) is equal to 5, we get…</p>
+<p><span class="math display">\[
+\sqrt{\frac{5}{4}} = 1.118
+\]</span></p>
+<p>The “standard” deviation from the mean in [1, 2, 3, 4], then, is about 1.118 (I did some rounding). It’s not literally an “average” deviation, but with some mathematical trickery we’ve gotten something <strong><em>like</em></strong> an average deviation.</p>
+<p>There <strong>is</strong> something beautiful about how the equation for the standard deviation is put together. Each piece is helping us get what we really want: “The average deviation from the mean”. I have some bad news though. Two pieces of bad news, actually:</p>
+<ol type="1">
+<li>You’re probably never going to calculate this by hand. Your computer will probably be calculating all of your standard deviations for you and you might even start to forget about this beautiful equation. (I have some tissues if you need them.)</li>
+<li>There are actually two different formulas for the standard deviation.</li>
+</ol>
+<p>Technically, you only divide by N if you are calculating the population standard deviation. The population standard deviation is the standard deviation of <strong><em>all</em></strong> the possible data that exist within a specific population. In most cases, we don’t have the entire population of data, just a sample from that population.</p>
+<p>The population standard deviation is denoted as “<span class="math inline">\(\sigma\)</span>”, the lowercase Greek letter for “sigma”. Therefore,</p>
+<p><span class="math display">\[
+\sigma = \sqrt{\frac{SS_{Total}}{N}}
+\]</span></p>
+<p>If you are calculating a <strong><em>sample</em></strong> standard deviation, we denote this as <em>s</em> and we divide by “N - 1” instead of “N”. Therefore,</p>
+<p><span class="math display">\[
+s = \sqrt{\frac{SS_{Total}}{N-1}}
+\]</span></p>
+<p>This term (N - 1) is referred to as “degrees of freedom”. I’m going to do you a favor (for now) and not elaborate on why it’s called that. Just know for now that you divide by N for a population SD (<span class="math inline">\(\sigma\)</span>) and by (N - 1), aka “degrees of freedom”, for a sample SD (<span class="math inline">\(s\)</span>).</p>
+</section>
+<section id="sample-statistics-versus-population-parameters" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="sample-statistics-versus-population-parameters"><span class="header-section-number">1.6</span> Sample statistics versus population parameters</h2>
+<p>Let me give you two scenarios:</p>
+<ul>
+<li>You want to know the average height of the New Orleans Saints</li>
+<li>You want to know the average height of a “brony” (i.e., a male, adult fan of the show “My Little Pony”)</li>
+</ul>
+<p>In the first instance, you can just look up the Saints’ roster online and calculate the population mean based on the entire roster’s data. In the second scenario, however, you probably don’t have access to each and every “brony” in existence (if you do, then I’m kind of terrified of your power…). You’d probably have to do some work and find a sub-sample of the overall population of bronies.</p>
+<p>In the first scenario, you can calculate the population mean, which is denoted as <span class="math inline">\(\mu\)</span>, the Greek letter “mu” (pronounced like “Mew”, the pink feline Pokemon). Again, that’s because you can find EVERY height for EVERY Saints player, the entire population of them. For the bronies, though, you can probably only find a random sample from the larger population of bronies. When you calculate the average height from your <em>sample</em> of bronies, you have a sample mean, which hopefully is pretty close to the population height. We denote the sample mean as <span class="math inline">\(\bar{x}\)</span>.</p>
+<p>For the Saints, you can calculate the population SD (<span class="math inline">\(\sigma\)</span>) via</p>
+<p><span class="math display">\[
+\sigma = \sqrt{\frac{\sum(x-\mu)^2}{N}}
+\]</span></p>
+<p>For the bronies, you’d calculate a sample SD (<em>s</em>) via</p>
+<p><span class="math display">\[
+s = \sqrt{\frac{\sum(x-\bar{x})^2}{N-1}}
+\]</span></p>
+<p>The population standard deviation (<span class="math inline">\(\sigma\)</span>) and the sample standard deviation (<span class="math inline">\(s\)</span>) are two different things, so they have two different equations. <span class="math inline">\(\sigma\)</span> is the true population-level parameter. It’s the standard deviation of the <strong><em>entire</em></strong> population. Sample statistics are used to <strong><em>estimate</em></strong> or <strong><em>approximate</em></strong> the population parameters. Thus, <span class="math inline">\(s\)</span> is an estimation/approximation of <span class="math inline">\(\sigma\)</span>.</p>
+<p>The equation for <span class="math inline">\(\sigma\)</span> has you dividing by N, the total number of observations in the population. By contrast, the sample statistic <span class="math inline">\(s\)</span> has you dividing by “N - 1”. This “N - 1” is called “degrees of freedom”. I won’t get too deep into why it’s called that, mostly because “degrees of freedom” is a more general concept that goes far beyond our present goals. I will say this, though: When estimating <span class="math inline">\(\sigma\)</span>, we can’t use the population mean <span class="math inline">\(\mu\)</span> to determine how much each observation deviates from the mean. Oftentimes, you don’t know what <span class="math inline">\(\mu\)</span> is! You have to estimate <span class="math inline">\(\mu\)</span> with <span class="math inline">\(\bar{x}\)</span>. So, when you’re calculating a sample standard deviation, you’re “double-dipping”: You’re using one sample statistic (<span class="math inline">\(\bar{x}\)</span>) to estimate another sample statistic (<span class="math inline">\(s\)</span>). This “double-dipping” introduces bias into the estimate, and dividing by degrees of freedom (N - 1) instead of N helps to mitigate this bias.</p>
+</section>
+<section id="bivariate-distributions" class="level2" data-number="1.7">
+<h2 data-number="1.7" class="anchored" data-anchor-id="bivariate-distributions"><span class="header-section-number">1.7</span> Bivariate distributions</h2>
+<p>So far, we’ve only been looking at one variable in isolation. Characteristics of a single variable <strong>can</strong> be interesting: “A surprisingly large percentage of gamers are women”. That basically amounts to saying, “You’d be surprised at how this one variable is distributed.”</p>
+<p>Most interesting scientific findings, however, involve more than just one variable. For instance, have you ever wondered if there’s some sort of association between a man’s height and the size of his vehicle?</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/mens_height.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="A scatterplot showing a positive correlation between men's height and the height of their vehicle"></p>
+</figure>
+</div>
+<p>In the figure above, I’ve plotted some fake data representing the relationship between men’s height and the height of their vehicle. Each dot represents one man in the sample. The height of that dot (vertical, up-down, y-axis) represents how tall that man is. Each dot also appears at a horizontal (left-right, x-axis) location. The further to the left each dot is, the shorter that man’s vehicle is. The further to the right each dot is, the taller their vehicle is. This kind of plot is called a scatter plot. It’s one of the best ways to visualize the relationship (or lack thereof) between two continuous variables.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/bar_chart.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="A bar chart showing how many students like different sports"></p>
+</figure>
+</div>
+<p>The above chart is called a bar plot. Bar plots are a good way to display the value of a continuous variable across different levels of a categorical variable. In this plot, we’re shown how many students consider a certain sport to be their favorite. One of the variables (sport) has 4 levels: football, hockey, rugby, and “Other”. The number of “favorites” is also broken down by sex/gender: “Boys” and “Girls”. (There should really be a third level for “non-binary” or something like that, but if there are no data in a category, they’re often omitted from graphs.)</p>
+</section>
+<section id="independent-and-dependent-variables-ivs-and-dvs" class="level2" data-number="1.8">
+<h2 data-number="1.8" class="anchored" data-anchor-id="independent-and-dependent-variables-ivs-and-dvs"><span class="header-section-number">1.8</span> Independent and dependent variables (IVs and DVs)</h2>
+<p>When you read a headline about a new scientific study, there’s usually an implied statement of causality. “Research shows that eating chocolate actually reduces risk of cancer!” There are two variables here: The degree to which people eat chocolate and the degree to which someone has cancer (or just whether they have cancer or not). When conducting a statistical analysis, we need to make the implied direction of causality explicit. Which variable is the outcome that supposedly changes <strong><em>depending on</em></strong> the other variable? Which variable is the implied pre-cursor, the one doing the changing? In the hypothetical headline above, eating chocolate is the independent variable (IV) and cancer risk is the dependent variable (DV).</p>
+<p>The dependent variable (DV) is the implied outcome. If someone said they always do better on tests when they drink a cup of coffee beforehand, test performance is the DV. Test performance is something that supposedly changes (or depends on) some other variable. The coffee in this example would be the independent variable (IV). The independent variable is the variable that is supposedly making a difference in the dependent variable. There’s usually an insinuation that the independent variable (IV) causes the dependent variable (DV) to change. Sometimes people use more cautious language. For instance, they’ll refer to the IV as the “predictor variable”. After all, maybe drinking coffee doesn’t <strong><em>cause</em></strong> you to do better on your exams, but it might <strong><em>correlate</em></strong> with you doing better on your exams.</p>
+<section id="correlational-or-observational-vs.-experimental-research-designs" class="level3" data-number="1.8.1">
+<h3 data-number="1.8.1" class="anchored" data-anchor-id="correlational-or-observational-vs.-experimental-research-designs"><span class="header-section-number">1.8.1</span> Correlational (or observational) vs.&nbsp;Experimental research designs</h3>
+<p>Does playing violent video games cause kids to become violent? Some studies have shown that kids indeed show a positive association (or “positive correlation”) between the amount of hours they spend playing violent video games and how violent they are. In this scenario “hours spent playing violent video games” is the independent variable and “level of violent behavior” is the dependent variable. The violent behavior of the kids (the DV) supposedly “depends on” or “changes depending on” how much time they spend playing violent video games (the IV). Conversely, how much time they spend playing violent video games (the IV) supposedly causes a change in how violent the kids are (the DV).</p>
+<p>But really, you could flip things around and say that kids who were already violent tend to also enjoy violent video games. You could say, “Violent kids tend to play more violent video games.” Now, the phrasing makes it sound like “time spent playing violent video games” is the DV and “level of (pre-existing) violence” is the IV. One of the most common mistakes I see researchers make is to assume an IV is causing changes in a DV simply because someone designated one variable as the IV and the other as the DV. They could’ve flipped things around though. The data don’t <strong><em>by themselves</em></strong> tell you which direction causation is moving in. You’ll have to read the study more carefully to see if there are justifications for causal inferences like these.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/corr_research_be_like.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="A picture showing the different directions and difficulties inherent to correlational research"></p>
+</figure>
+</div>
+<p>This illustrates an important point: In the kind of research described above (correlational/observational research), the dependent variable (DV) in a statistical analysis is more like a focal variable. It’s something we’re choosing to focus on. Differences in the IV aren’t necessarily <strong>causing</strong> differences in the DV. The IV could be causing the DV, the DV could be causing the IV, or some third variable could be causing both.</p>
+<p>This is called a confounder: a variable that causes differences in two other variables, and these two other variables are correlated with each other but not caused by each other. For instance, ice cream sales and drownings are correlated with each other, but they don’t cause each other. They are both caused by time of year. In the summer, people tend to eat more ice cream and, coincidentally, go swimming more often. The more swimming people are doing, the more they’re rolling the dice with drowning.</p>
+<p>Correlational/observational research is fundamentally different from experimental research. There are all kinds of variables that might cause children to behave more violently: their genes, their upbringing at home, social factors at school, and even the kinds of media they consume outside of video games. If you find a kid at random to participate in your study, they could be all over the place on any of these different spectrums.</p>
+<p>However, you can control how much (or whether) they play a violent video game. It’d be really inconvenient, but it is possible. You could randomly assign children in your study to play violent video games for a few hours and have the rest of the kids play non-violent video games. If you measure aggression after this random assignment has occurred, then you can infer that playing violent (vs.&nbsp;non-violent) video games <strong>caused</strong> changes in aggressive behavior (if there is any). That’s because all the other variables (genes, upbringing, etc.) should wash out through the process of random assignment.</p>
+<p>In a correlational (or observational) study, you passively record characteristics of people without experimental manipulation or intervention. How violent are they? About how many hours per week do they spend playing violent video games? There are always more variables you could collect, but if you don’t experimentally control any of these variables, you are merely observing data.</p>
+</section>
+<section id="multiple-ivs" class="level3" data-number="1.8.2">
+<h3 data-number="1.8.2" class="anchored" data-anchor-id="multiple-ivs"><span class="header-section-number">1.8.2</span> Multiple IVs?</h3>
+<p>Usually, there is only one DV in a study. There are techniques for analyzing multiple DVs at the same time, but most people just focus on one. It is very common, though, for people to have multiple IVs. Let’s say you’re interested in the effects of being in honors on peoples’ GPA. You expect students in honors to have higher GPAs compared to students who aren’t in honors. In this scenario, college GPA is the DV and whether someone’s in honors or not is the IV. You don’t have to stop there though. You could also ask whether the “effects” of being in honors on GPA are the same for men, women, or other gender identities. In this scenario, there are two IVs: (1) whether a student is in honors and (2) whether they are male, female, or some other gender identity.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./index.html" class="pagination-link" aria-label="About me and this book">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">About me and this book</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./02-probability-hypothesis-testing.html" class="pagination-link" aria-label="Probability distributions and hypothesis testing">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Probability distributions and hypothesis testing</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

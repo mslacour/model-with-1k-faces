@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>8&nbsp; Factorial ANOVA – The Model with a Thousand Faces</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./09-general-linear-model.html" rel="next">
+<link href="./07-repeated-measures.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-d3f7f8e73c8d287b30bcf59c2b563615.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./08-factorial-anova.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Factorial ANOVA</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">The Model with a Thousand Faces</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About me and this book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01-variables-distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Variables and distributions</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02-probability-hypothesis-testing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Probability distributions and hypothesis testing</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-first-statistical-tests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Baby’s first statistical tests</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04-correlation-regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Correlation and Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05-tests-or-models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Are these statistical tests or prediction models?</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06-differences-between-means.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Differences between sample means</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07-repeated-measures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Repeated measures</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08-factorial-anova.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Factorial ANOVA</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09-general-linear-model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The General Linear Model</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10-chi-square-fisher.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Chi-square and Fisher’s Exact Test</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11-multiple-regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Multiple Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./12-glm-moderation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">The General Linear Model and “Moderation”</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#factors-and-levels-of-factors" id="toc-factors-and-levels-of-factors" class="nav-link active" data-scroll-target="#factors-and-levels-of-factors"><span class="header-section-number">8.1</span> Factors and levels of factors</a></li>
+  <li><a href="#main-effects-and-interactions" id="toc-main-effects-and-interactions" class="nav-link" data-scroll-target="#main-effects-and-interactions"><span class="header-section-number">8.2</span> Main effects and interactions</a></li>
+  <li><a href="#the-parallel-lines-heuristic" id="toc-the-parallel-lines-heuristic" class="nav-link" data-scroll-target="#the-parallel-lines-heuristic"><span class="header-section-number">8.3</span> The “parallel lines” heuristic</a></li>
+  <li><a href="#anova-tables" id="toc-anova-tables" class="nav-link" data-scroll-target="#anova-tables"><span class="header-section-number">8.4</span> ANOVA tables</a></li>
+  <li><a href="#post-hoc-tests" id="toc-post-hoc-tests" class="nav-link" data-scroll-target="#post-hoc-tests"><span class="header-section-number">8.5</span> Post hoc tests</a></li>
+  <li><a href="#statistical-tests-learned-so-far" id="toc-statistical-tests-learned-so-far" class="nav-link" data-scroll-target="#statistical-tests-learned-so-far"><span class="header-section-number">8.6</span> Statistical tests learned so far</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Factorial ANOVA</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>A regular, one-way (or “single factor”) ANOVA can compare sample means, but only if each of those sample means are from the same “factor” or “independent variable”. Students often get confused when they’re trying to figure out if they are dealing with multiple factors and when they are not. This is an important issue to be clear on because the answer to questions like these determines whether you need to be using a one-way ANOVA or a multi-factor (or “factorial”) ANOVA.</p>
+<section id="factors-and-levels-of-factors" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="factors-and-levels-of-factors"><span class="header-section-number">8.1</span> Factors and levels of factors</h2>
+<p>So far, we’ve looked at <em>t</em>-tests and ANOVAs that can handle only one factor at a time. Want to compare GPAs between STEM majors and non-STEM majors? That’s a <em>t</em>-test because there are two sample means, the average GPA of STEM majors and the average GPA of non-STEM majors. The independent variable is a factor called “college major.” This factor has two levels: STEM and not STEM.</p>
+<p>What if you wanted to compare average GPAs between STEM majors, education majors, and everyone else? Now you need to use an ANOVA because there are three (or more) levels to the factor. In other words, you want to compare three or more sample means and determine whether any of them are statistically different from one another. Now the same factor from before (“college major”) has three levels: STEM, Education, and Everyone Else (or more groups, if you want to add them).</p>
+<p>In a multi-factor ANOVA, you have two or more factors in play at the same time. For instance, what if I want to compare the average GPA between STEM majors and non-STEM majors? <strong><em>In addition to that</em></strong>, I want to compare (genetic) men and (genetic) women. Now we have two factors, college major and genetic sex. Each of these factors has two levels. College major has two levels: “STEM major” and “not a STEM major”. The (genetic) sex factor has two levels: “male” and “female”. Adding sex into the research question multiplied the number of total sample means.</p>
+<p>(As I’ve noted before, while there are a substantial number of people that don’t fit into the typical gender binary, there doesn’t always end up being enough people in these categories in a data set to produce reliable estimates of, e.g., average GPA. If you’re a researcher specifically interested in these groups, you usually have to consciously seek out and recruit specific people for your study.)</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/1a.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="A diagram showing how adding a second factor multiplies the number of groups being compared"></p>
+</figure>
+</div>
+<p>If you have two different types of therapy (CBT and ABA), that’s one factor with two levels. If you add a third type of therapy, that doesn’t <em>multiply</em> the number of groups, but merely adds one:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/2a.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="A diagram of one factor with three levels: three different types of therapy"></p>
+</figure>
+</div>
+<p>However, if you want to determine whether different therapies affect depression for people of different sexes, this <em>doubles</em> the number of group means, rather than just adding another group:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/3a.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="A diagram crossing three types of therapy with two sexes, giving six groups"></p>
+</figure>
+</div>
+<p>Taking one factor with three levels (three different therapies) and multiplying that by a factor with two levels (men and women) gives you 6 groups altogether.</p>
+</section>
+<section id="main-effects-and-interactions" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="main-effects-and-interactions"><span class="header-section-number">8.2</span> Main effects and interactions</h2>
+<p>When you have more than one factor, i.e., more than one independent variable, you have to ask yourself: How does factor A affect the DV overall? How does factor B affect the DV overall? And trickiest of all: Does the effect of factor A on the DV change depending on factor B?</p>
+<p>That last question concerns interactions between factors. You could also ask, “Does the effect of factor B on the DV change depending on factor A?” It’s the same thing. Another way of saying it is, “There is an interaction between factors A and B if the effects of A and B on the DV are dependent on each other” or “There is no interaction between factors A and B if the effects of A and B on the DV are independent from each other.”</p>
+<p>The interaction is tricky, but the main effect can be tricky too. If you are assessing whether there’s a main effect of factor A, you have to completely ignore everything about factor B. The same thing goes for when you are assessing whether there’s a main effect of factor B. You have to completely ignore what’s going on with factor A.</p>
+<p>Here’s an example of an interaction plot:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/int_plot.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="An interaction chart where the placebo group has the same mean for men and women, but the 50mg group has different means for the men and women groups."></p>
+</figure>
+</div>
+<p>Each point in the plot represents a sample mean from one of the four groups. There are two factors (Placebo/medicine and male/female). Each factor has two levels. This makes the study a 2 x 2 (“two by two”) factorial design.</p>
+<p>The DV is pain. Factor A is (let’s say) Group (Placebo vs.&nbsp;50mg). Factor B is gender (Male vs.&nbsp;Female). Is there a main effect of factor A? Yes. Overall, the group mean for both placebo groups (the men AND the women combined) looks very different from the overall group mean for the 50mg group (the men AND the women combined).</p>
+<p>Actually, the difference between the two combined Placebo means and the two combined 50mg means is due entirely to the women reacting differently to the drug than men. Men react the same in both groups. However, a main effect focuses <strong><em>ONLY</em></strong> on one factor and aggregates over the levels of the other factor. The levels of the other factor are ignored. The Placebo groups are lower in pain than the 50mg groups. Therefore, there is a main effect of Group.</p>
+<p>Is there a main effect of Gender? Yes. If you combine the two male groups (Placebo and 50mg), their mean is about 10. If you combine both female groups (Placebo and 50mg), the mean is about 20. When assessing whether there is a main effect of gender, you completely disregard the effects of Placebo vs.&nbsp;50mg.</p>
+<p>Is there an interaction between Group and Gender? Yes. The drug (or Group) affects pain levels for men differently than it does for women. Another way of saying this is that the effect of gender on pain levels depends on whether they’re in the placebo group or the 50mg group. The effects of gender and group are not independent. They interact.</p>
+<p>Here’s another example, one that’s tripped up a lot of people:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/x_int.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="An X-shaped interaction."></p>
+</figure>
+</div>
+<p>Is there a main effect of group? No.&nbsp;If you combine the Male and Female placebo groups into one, the overall mean is about 20. Same for the 50mg group. If there’s no difference between the Placebo and 50mg groups overall, then there’s no main effect of group. The overall effect of placebo versus the 50mg groups (ignoring gender) doesn’t change. When you average over gender, there is no overall difference in pain levels between the placebo group and the 50mg group.</p>
+<p>Is there a main effect of gender? No.&nbsp;The overall average for women, when you combine the placebo and 50mg women groups together is about 20. Same for men. When you ignore Placebo versus 50mg, there’s no difference between men and women. Therefore, there is no main effect of gender.</p>
+<p>Is there an interaction between group and gender? Yes. In this figure, the drug group affects pain levels differently depending on whether it’s a man or a woman. Another way of saying this is that the way that gender affects pain levels depends on what group they were in: Placebo or 50mg. The effects of gender and group are not independent. Therefore, there is an interaction between these two factors.</p>
+</section>
+<section id="the-parallel-lines-heuristic" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="the-parallel-lines-heuristic"><span class="header-section-number">8.3</span> The “parallel lines” heuristic</h2>
+<p>One “rule of thumb” (or “heuristic”) you can use to determine whether there is an interaction between two factors is to ask whether the lines on an interaction chart are parallel. If they’re parallel, then there’s (usually) no interaction. If they <em>aren’t</em> parallel, then there <em>is</em> (usually) an interaction.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/interactions.jpeg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%" alt="Four interaction plots labeled Table A through Table D, each with Low and High Structure on the x-axis and separate lines for two contingency levels. Table A's lines are parallel; the lines in Tables B through D are increasingly non-parallel."></p>
+</figure>
+</div>
+<p>In the figure above, for instance, the plot marked “Table A” has no interaction. The effect of Structure (Low vs.&nbsp;High) is independent of the effect of contingency factor (<span class="math inline">\(C_H\)</span> vs.&nbsp;<span class="math inline">\(C_L\)</span>). In Table B, however, the gap between <span class="math inline">\(C_H\)</span> and <span class="math inline">\(C_L\)</span> is small for Low Structure and large for High structure. That means there’s an interaction between the two factors, albeit a small one. Tables C and D show some more pronounced examples of interactions.</p>
+<p>I can’t promise this rule of thumb will always hold up. A student came up with it once, the rest of the class found it very useful, and I couldn’t think of a counter-example in the moment. However, you should be familiar enough with the concept of a statistical interaction to generalize the concept outside of just interaction plots.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/interaction.bar.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="A bar plot comparing adults and children in conditions with at least one false reaction versus no false reactions"></p>
+</figure>
+</div>
+<p>In the bar plot above, for example, there is an interaction between age (Adults vs.&nbsp;Children) and False Reactions (At least one vs.&nbsp;none). I can see this because the gap between adults and children is smaller for the “at least one” conditions compared to the “No False Reaction” conditions.</p>
+<p>Honestly, interaction plots make interactions easiest to assess, but I’m seeing them less and less in the scientific literature. Most researchers seem to prefer presenting their data in alternative ways. That’s why it’s important to understand the concept underneath the picture rather than learning cheap tricks to tell an interaction from a specific kind of picture: An interaction between factors occurs when the effect of one factor on the DV changes depending on levels of the other factor.</p>
+</section>
+<section id="anova-tables" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="anova-tables"><span class="header-section-number">8.4</span> ANOVA tables</h2>
+<p>Just like with any ANOVA, you will usually see the output of the model in the form like the following:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/factorial_table.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="An ANOVA table."></p>
+</figure>
+</div>
+<p>This ANOVA table reads a lot like the ANOVA tables you’ve seen before. Each source of variation is listed in the left-most column. The effect of being in a particular group (e.g., Placebo vs.&nbsp;50mg) is the first one at the top: “Group”. This row represents the amount of variation in the dependent variable (pain) that is accounted for by knowing which group people were in. This represents the main effect of Group.</p>
+<p>The next source (or row) underneath is “Gender”. This represents the amount of variation in the dependent variable accounted for by knowing which Gender/sex someone was. This is the main effect of gender.</p>
+<p>“Group x Gender” represents the interaction between the two factors of Group and Gender. It is read as “Group by gender”. Finally, the “Residual” source represents all the leftover variation in the dependent variable that is not accounted for by either of the main effects or the interaction. And, as always, “Total” represents the total amount of variation in the dependent variable that could’ve possibly been accounted for.</p>
+<p>The main effects and the interaction have <em>p</em>-values listed in the right-most column. These <em>p</em>-values represent whether any of these factors are statistically significant. In this table, all the <em>p</em>-values are below .05. This means that both main effects and the interaction are statistically significant. In other words,</p>
+<ul>
+<li>Null hypothesis: You assume that being in the Placebo group or 50mg group makes no difference in pain levels. The two overall means for those groups are so far apart, however, that there would only be less than a 5% chance of observing means that far apart (or more far apart) when you assume the null hypothesis is true. Therefore, the null hypothesis is probably false.</li>
+<li>Null hypothesis: You assume that men and women don’t experience pain levels any differently from each other. The two overall means for those groups are so far apart, however, that there would only be less than a 5% chance of observing means that far apart (or more far apart) when you assume the null hypothesis is true. Therefore, the null hypothesis is probably false.</li>
+<li>Null hypothesis: You assume that the effect of Group and Gender are independent (i.e., they don’t interact). You observe a dependency (i.e., interaction) between these effects so large, however, that the probability of observing an interaction that large (or larger) has a less than 5% chance of occurring when you assume the null hypothesis is true. Therefore, the null hypothesis is probably false.</li>
+</ul>
+</section>
+<section id="post-hoc-tests" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="post-hoc-tests"><span class="header-section-number">8.5</span> Post hoc tests</h2>
+<p>Just like with any ANOVA, the overall results only give you basic information. If there are only two levels for a factor, and that factor is statistically significant (i.e., there’s a significant main effect for that factor), then you know that at least those two groups, overall, are (probably) different from one another. But if there’s a statistically significant interaction, then main effects can be misleading. If you want to know whether any specific group (or set of groups) statistically differ from another group (or set of groups) you’ll have to do a post hoc test. For more information on post hoc tests, go back and review the chapter on <em>t</em>-tests and basic between-subjects ANOVAs.</p>
+</section>
+<section id="statistical-tests-learned-so-far" class="level2" data-number="8.6">
+<h2 data-number="8.6" class="anchored" data-anchor-id="statistical-tests-learned-so-far"><span class="header-section-number">8.6</span> Statistical tests learned so far</h2>
+<p>Effect sizes start to get a little tricky with factorial ANOVAs. You can isolate an effect/factor (e.g., <span class="math inline">\(SS_{A}\)</span>, <span class="math inline">\(SS_{B}\)</span>, <span class="math inline">\(SS_{A \times B}\)</span>) and divide it by <span class="math inline">\(SS_{Total}\)</span>. This will give you an eta-squared value. In other words, this’ll give the proportion of variance in the dependent variable “accounted for” by that one effect/factor <em>out of the total variation</em>. You could also divide any of the factors/effects by itself and the residuals (e.g., <span class="math inline">\(SS_{A} / (SS_{A}+SS_{Residual})\)</span>). This would give you a partial eta-squared value for that effect/factor. To be honest, I’m personally unsure how useful partial eta-squared is in this context.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 38%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>When to use</th>
+<th>Distribution / Requirements</th>
+<th>Effect size</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Single observation <em>z</em>-score</td>
+<td>You just want to know how likely (or unlikely) or how extraordinary (or average) a single observation is.</td>
+<td>Normal distribution. Population mean and population SD are known.</td>
+<td>N/A</td>
+</tr>
+<tr class="even">
+<td>Group <em>z</em>-test</td>
+<td>You want to know whether a sample mean (drawn from a normal distribution) is higher or lower than a certain value (usually the population average)</td>
+<td>Normal distribution. Population mean and population SD are known.</td>
+<td>N/A</td>
+</tr>
+<tr class="odd">
+<td>1 sample <em>t</em>-test</td>
+<td>You want to know whether a sample mean is different from a certain value (either 0 or the population average)</td>
+<td><em>t</em>-distribution. Population mean is known, but not the population SD</td>
+<td>N/A</td>
+</tr>
+<tr class="even">
+<td>Correlation</td>
+<td>Measuring the degree of co-occurrence between two continuous variables</td>
+<td>Linear relationship between variables, no outliers, normally distributed residuals.</td>
+<td>Pearson’s <em>r</em></td>
+</tr>
+<tr class="odd">
+<td>Independent samples <em>t</em>-test</td>
+<td>Determine whether there is a difference between two sample means</td>
+<td><em>t</em>-distribution, normally distributed samples with roughly equal variances</td>
+<td>Cohen’s <em>d</em></td>
+</tr>
+<tr class="even">
+<td>One-way, between subjects ANOVA</td>
+<td>Determine whether there is a difference among three or more sample means from independent groups</td>
+<td><em>F</em>-distribution, normally distributed samples with roughly equal variances</td>
+<td>Eta-squared (<span class="math inline">\(\eta^2\)</span>)</td>
+</tr>
+<tr class="odd">
+<td>Repeated measures <em>t</em>-test</td>
+<td>Determine whether there is a difference between two sample means when those derive from multiple observations from the same units (usually people) at different time points</td>
+<td><em>t</em>-distribution, the differences in observations are normally distributed</td>
+<td>Cohen’s <em>d</em></td>
+</tr>
+<tr class="even">
+<td>One-way, repeated measures ANOVA</td>
+<td>Determine whether there is a difference among three or more sample means when those derive from multiple observations from the same units (usually people) at different time points</td>
+<td><em>F</em>-distribution, normally distributed samples, sphericity</td>
+<td>Partial eta-squared (<span class="math inline">\(\eta^2_{partial}\)</span>)</td>
+</tr>
+<tr class="odd">
+<td>Factorial ANOVA</td>
+<td>Determine whether a set of group means differ from one another, while taking into account that these means result from separate (possibly interacting) factors</td>
+<td><em>F</em>-distribution, all sample distributions are normally distributed with roughly equal variances.</td>
+<td>Eta-squared (<span class="math inline">\(\eta^2\)</span>) or partial eta-squared (<span class="math inline">\(\eta^2_{partial}\)</span>) for each factor of interest</td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./07-repeated-measures.html" class="pagination-link" aria-label="Repeated measures">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Repeated measures</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./09-general-linear-model.html" class="pagination-link" aria-label="The General Linear Model">
+        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The General Linear Model</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

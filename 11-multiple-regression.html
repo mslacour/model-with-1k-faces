@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>11&nbsp; Multiple Regression – The Model with a Thousand Faces</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./12-glm-moderation.html" rel="next">
+<link href="./10-chi-square-fisher.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-d3f7f8e73c8d287b30bcf59c2b563615.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./11-multiple-regression.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Multiple Regression</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">The Model with a Thousand Faces</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About me and this book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01-variables-distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Variables and distributions</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02-probability-hypothesis-testing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Probability distributions and hypothesis testing</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-first-statistical-tests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Baby’s first statistical tests</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04-correlation-regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Correlation and Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05-tests-or-models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Are these statistical tests or prediction models?</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06-differences-between-means.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Differences between sample means</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07-repeated-measures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Repeated measures</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08-factorial-anova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Factorial ANOVA</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09-general-linear-model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The General Linear Model</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10-chi-square-fisher.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Chi-square and Fisher’s Exact Test</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11-multiple-regression.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Multiple Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./12-glm-moderation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">The General Linear Model and “Moderation”</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#a-simple-example" id="toc-a-simple-example" class="nav-link active" data-scroll-target="#a-simple-example"><span class="header-section-number">11.1</span> A simple example</a></li>
+  <li><a href="#centering-and-scaling-variables" id="toc-centering-and-scaling-variables" class="nav-link" data-scroll-target="#centering-and-scaling-variables"><span class="header-section-number">11.2</span> Centering and Scaling Variables</a>
+  <ul class="collapse">
+  <li><a href="#centering" id="toc-centering" class="nav-link" data-scroll-target="#centering"><span class="header-section-number">11.2.1</span> Centering</a></li>
+  <li><a href="#scaling-standardizing" id="toc-scaling-standardizing" class="nav-link" data-scroll-target="#scaling-standardizing"><span class="header-section-number">11.2.2</span> Scaling (Standardizing)</a></li>
+  </ul></li>
+  <li><a href="#correlation-as-shared-variance" id="toc-correlation-as-shared-variance" class="nav-link" data-scroll-target="#correlation-as-shared-variance"><span class="header-section-number">11.3</span> “Correlation” as “Shared Variance”</a></li>
+  <li><a href="#partial-correlation-conceptually" id="toc-partial-correlation-conceptually" class="nav-link" data-scroll-target="#partial-correlation-conceptually"><span class="header-section-number">11.4</span> Partial Correlation, Conceptually</a>
+  <ul class="collapse">
+  <li><a href="#partial-correlation-almost-equals-the-standardized-regression-coefficient" id="toc-partial-correlation-almost-equals-the-standardized-regression-coefficient" class="nav-link" data-scroll-target="#partial-correlation-almost-equals-the-standardized-regression-coefficient"><span class="header-section-number">11.4.1</span> Partial correlation <em>almost</em> equals the standardized regression coefficient</a></li>
+  </ul></li>
+  <li><a href="#partial-correlation-mathematically" id="toc-partial-correlation-mathematically" class="nav-link" data-scroll-target="#partial-correlation-mathematically"><span class="header-section-number">11.5</span> Partial Correlation, Mathematically</a></li>
+  <li><a href="#regression-coefficients-mathematically" id="toc-regression-coefficients-mathematically" class="nav-link" data-scroll-target="#regression-coefficients-mathematically"><span class="header-section-number">11.6</span> Regression coefficients, Mathematically</a></li>
+  <li><a href="#new-assumption-no-multicollinearity" id="toc-new-assumption-no-multicollinearity" class="nav-link" data-scroll-target="#new-assumption-no-multicollinearity"><span class="header-section-number">11.7</span> New Assumption: No multicollinearity</a>
+  <ul class="collapse">
+  <li><a href="#quantifying-multicollinearity-with-the-variance-inflation-factor-vif" id="toc-quantifying-multicollinearity-with-the-variance-inflation-factor-vif" class="nav-link" data-scroll-target="#quantifying-multicollinearity-with-the-variance-inflation-factor-vif"><span class="header-section-number">11.7.1</span> Quantifying Multicollinearity with the Variance Inflation Factor (VIF)</a></li>
+  </ul></li>
+  <li><a href="#from-lines-to-planes" id="toc-from-lines-to-planes" class="nav-link" data-scroll-target="#from-lines-to-planes"><span class="header-section-number">11.8</span> From lines to planes</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Multiple Regression</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Multiple regression is an extension of simple linear regression that allows more than one predictor to be included in a single model. Instead of asking whether one variable is related to an outcome, multiple regression asks how several predictors relate to an outcome simultaneously. This makes it possible to address more realistic research questions, where outcomes are rarely influenced by a single factor in isolation.</p>
+<p>At its core, a multiple regression model describes how an outcome variable Y is expected to change as one or more predictors change.</p>
+<p>A multiple regression model includes an intercept and a coefficient (or “slope”) for each predictor.</p>
+<p>The intercept represents the expected value of the outcome when all predictors are equal to zero, just like in simple linear regression. Whether this value is meaningful depends entirely on how the predictors are scaled and whether zero is a sensible reference point. In many cases, the intercept is included for mathematical completeness rather than substantive interpretation.</p>
+<p>Each coefficient represents the expected change in the outcome associated with a one-unit increase in that predictor, <em>while adjusting for the other predictors in the model</em>. This is the defining feature of multiple regression. Coefficients do not describe simple associations. Instead, they describe conditional relationships, reflecting what is unique about each predictor after shared variance has been accounted for.</p>
+<section id="a-simple-example" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="a-simple-example"><span class="header-section-number">11.1</span> A simple example</h2>
+<p>Imagine a model predicting exam performance from hours studied and test anxiety.</p>
+<p><span class="math display">\[
+\text{Exam Performance} = b_0 + b_1(\text{Hours Studied}) + b_2(\text{Test Anxiety}) + \epsilon
+\]</span></p>
+<p>Both predictors are related to exam scores, and they may also be related to each other. The slope for hours studied (<span class="math inline">\(b_1\)</span>) reflects how exam performance is expected to change as study time increases for students with the same level of anxiety. Likewise, the slope for anxiety (<span class="math inline">\(b_2\)</span>) reflects differences in exam performance among students who studied the same amount.</p>
+<p>This conditional framing is essential. Multiple regression does not tell us whether a predictor matters in general. It tells us whether a predictor matters <em>in the context of the other predictors in the model</em>.</p>
+</section>
+<section id="centering-and-scaling-variables" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="centering-and-scaling-variables"><span class="header-section-number">11.2</span> Centering and Scaling Variables</h2>
+<p>Remember when I said the intercept in a model usually doesn’t have any inherent meaning? This is true when you leave all the variables in their original scale. The interpretation of regression coefficients depends heavily on how predictors are scaled. Two common transformations (centering and standardizing) are often used to improve interpretability or comparability.</p>
+<section id="centering" class="level3" data-number="11.2.1">
+<h3 data-number="11.2.1" class="anchored" data-anchor-id="centering"><span class="header-section-number">11.2.1</span> Centering</h3>
+<p>Centering a variable involves subtracting the mean from each value:</p>
+<p><span class="math display">\[
+X_{\text{centered}} = X - \bar{X}
+\]</span></p>
+<p>After centering, each value represents how far from the mean it is, expressed in the original units of the variable. Centering changes the location of a variable but not its scale. The distribution keeps the same shape and spread; it is simply shifted so that its mean is zero instead of its original value.</p>
+<p>Centering primarily affects the intercept (<span class="math inline">\(b_0\)</span>) of a regression model. When predictors are centered, the intercept represents the expected value of the outcome when predictors are at their average levels, rather than at zero. This often makes the intercept more interpretable.</p>
+<p>Importantly, centering does not change the slope. A one-unit increase in a centered predictor still corresponds to the same one-unit increase in the original scale, and the expected change in the outcome is unchanged.</p>
+</section>
+<section id="scaling-standardizing" class="level3" data-number="11.2.2">
+<h3 data-number="11.2.2" class="anchored" data-anchor-id="scaling-standardizing"><span class="header-section-number">11.2.2</span> Scaling (Standardizing)</h3>
+<p>Standardizing a variable goes one step further. Each value is converted to a z-score by subtracting the mean from each observation and dividing by the standard deviation:</p>
+<p><span class="math display">\[
+Z = \frac{X - \bar{X}}{SD_X}
+\]</span></p>
+<p>After standardization, each value represents how many standard deviations it is from the mean.</p>
+<p>Standardizing changes both the location and the scale of a variable. The mean becomes zero, and the standard deviation becomes one. While the overall shape of the distribution is preserved, the units are fundamentally different.</p>
+<p>Standardization is especially useful when predictors are measured on different scales. A slope associated with a standardized predictor represents the expected change in the outcome associated with a one-standard-deviation increase in that predictor.</p>
+<p>When the outcome is also standardized, slopes represent standardized changes in the outcome, making them comparable across predictors.</p>
+<p>When all variables in a regression model are standardized, the coefficients can be interpreted in relation to partial correlations, which I’ll elaborate on in the sections below.</p>
+</section>
+</section>
+<section id="correlation-as-shared-variance" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="correlation-as-shared-variance"><span class="header-section-number">11.3</span> “Correlation” as “Shared Variance”</h2>
+<p>Suppose the correlation between two variables, <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, is <span class="math inline">\(r = 0.5\)</span>. The correlation coefficient describes the strength of the linear relationship between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>. To translate this relationship into variance terms, we square the correlation:</p>
+<p><span class="math display">\[
+r^2 = 0.5^2 = 0.25
+\]</span></p>
+<p>This means that <strong>25% of the variance in <span class="math inline">\(X\)</span> overlaps with variance in <span class="math inline">\(Y\)</span></strong> (and vice versa). In other words, one quarter of the variability in each variable is shared between the two.</p>
+<p>It is important to interpret this carefully. Saying that 25% of the variance “overlaps” does not imply causation or explain <em>why</em> the variables are related. It simply reflects the degree to which knowing one variable reduces uncertainty about the other.</p>
+</section>
+<section id="partial-correlation-conceptually" class="level2" data-number="11.4">
+<h2 data-number="11.4" class="anchored" data-anchor-id="partial-correlation-conceptually"><span class="header-section-number">11.4</span> Partial Correlation, Conceptually</h2>
+<p>Partial correlation is the association between two variables when the effects of a third variable are calculated out, or <em>partialled out</em>. In this context, “partialled out” means that the variance shared with the third variable has been removed from both variables of interest. The resulting correlation reflects the relationship between the remaining, unique portions of the two variables.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/partial correlation.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%" alt="A diagram illustrating partial correlation: the overlap between two variables after removing the variance each shares with a third variable"></p>
+</figure>
+</div>
+<p>Now imagine if we have 3 variables. Y is our dependent variable. X is our first independent variable and Z is our second independent variable.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/venn diagrams.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%" alt="Venn diagrams showing the outcome Y overlapping with predictor X and with predictor Z"></p>
+</figure>
+</div>
+<p>X correlates with Y to some degree, we’ll call this <span class="math inline">\(r_{xy}\)</span>.</p>
+<p>Z also correlates with Y, we’ll call this correlation <span class="math inline">\(r_{zy}\)</span>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/3 variable venn.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%" alt="A three-circle Venn diagram of X, Y, and Z, with the region shared by all three shaded black"></p>
+</figure>
+</div>
+<p>In multiple regression, we no longer examine the overlap or bivariate correlation between one variable and the outcome variable, <span class="math inline">\(r_{xy}\)</span>, but the partial correlation between that variable and Y <em>after adjusting for all other independent variables in the model</em>.</p>
+<p>In the Venn diagram above, for instance, the total bivariate correlation between X and Y is represented by the orange and black shape where the yellow and red circles intersect. The partial correlation between X and Y while controlling for Z (<span class="math inline">\(r_{xy\cdot z}\)</span>) is represented by just the orange part of that shape, not the black part where Z also intersects with X and Y.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/orange minus black.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%" alt="The X and Y overlap from the Venn diagram, with the part also shared with Z removed, leaving the partial correlation of X and Y"></p>
+</figure>
+</div>
+<p>Likewise, the bivariate correlation between Z and Y, <span class="math inline">\(r_{zy}\)</span>, is represented by the purple and black shape made up where the red and blue circles intersect. The partial correlation between Z and Y (while adjusting for X, <span class="math inline">\(r_{zy\cdot x}\)</span>) is represented by just the purple part of that shape.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/purble minus black.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%" alt="The Z and Y overlap from the Venn diagram, with the part also shared with X removed, leaving the partial correlation of Z and Y"></p>
+</figure>
+</div>
+<section id="partial-correlation-almost-equals-the-standardized-regression-coefficient" class="level3" data-number="11.4.1">
+<h3 data-number="11.4.1" class="anchored" data-anchor-id="partial-correlation-almost-equals-the-standardized-regression-coefficient"><span class="header-section-number">11.4.1</span> Partial correlation <em>almost</em> equals the standardized regression coefficient</h3>
+<p>When all variables are standardized, the standardized regression coefficient and the partial correlation are closely related, but they are not the same number. As you’ll see in the equations below, they share the same numerator. They differ only in their denominators.</p>
+<p>The standardized regression coefficient reflects the <strong>unique predictive contribution</strong> of a predictor to the outcome, while the partial correlation reflects the <strong>unique shared variance</strong> between the predictor and the outcome after accounting for other variables.</p>
+<p>You can think of standardized coefficients as <strong>scaled versions of the corresponding partial correlations</strong>. They are not identical, but they tend to move together and often tell a similar story. For this reason, standardized coefficients remain useful analogies for understanding conditional relationships, even when they are not exact measures of partial correlation.</p>
+</section>
+</section>
+<section id="partial-correlation-mathematically" class="level2" data-number="11.5">
+<h2 data-number="11.5" class="anchored" data-anchor-id="partial-correlation-mathematically"><span class="header-section-number">11.5</span> Partial Correlation, Mathematically</h2>
+<p><span class="math display">\[
+\Large
+r_{xy\cdot z} \;=\; \frac{r_{xy} - r_{xz}r_{yz}}{\sqrt{\left(1-r_{xz}^2\right)\left(1-r_{yz}^2\right)}}
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(r_{xy\cdot z}\)</span> is the <strong>partial correlation</strong> between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> <em>adjusting for</em> <span class="math inline">\(z\)</span>.</li>
+<li><span class="math inline">\(r_{xy}\)</span> is the <strong>bivariate correlation</strong> between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>.</li>
+<li><span class="math inline">\(r_{xz}\)</span> is the <strong>bivariate correlation</strong> between <span class="math inline">\(x\)</span> and <span class="math inline">\(z\)</span>.</li>
+<li><span class="math inline">\(r_{yz}\)</span> is the <strong>bivariate correlation</strong> between <span class="math inline">\(y\)</span> and <span class="math inline">\(z\)</span>.</li>
+</ul>
+<p>This conceptual overlap pattern is mirrored in the equation for the partial correlation. Notice that the numerator subtracts out the part of the <span class="math inline">\(x\)</span>-<span class="math inline">\(y\)</span> relationship that is attributable to their shared relationships with <span class="math inline">\(z\)</span> (the <span class="math inline">\(r_{xz}r_{yz}\)</span> term). The denominator rescales what is left so that the result is still a correlation, bounded between <span class="math inline">\(-1\)</span> and <span class="math inline">\(+1\)</span>.</p>
+</section>
+<section id="regression-coefficients-mathematically" class="level2" data-number="11.6">
+<h2 data-number="11.6" class="anchored" data-anchor-id="regression-coefficients-mathematically"><span class="header-section-number">11.6</span> Regression coefficients, Mathematically</h2>
+<p><span class="math display">\[
+\Large
+b_{x} \;=\; \frac{r_{xy} - r_{xz}r_{yz}}{1 - r_{xz}^2}
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(b_x\)</span> is the <strong>standardized regression coefficient</strong> for predictor <span class="math inline">\(x\)</span> when predicting <span class="math inline">\(y\)</span> while adjusting for <span class="math inline">\(z\)</span>.</li>
+<li><span class="math inline">\(r_{xy}\)</span> is the <strong>bivariate correlation</strong> between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>.</li>
+<li><span class="math inline">\(r_{xz}\)</span> is the <strong>bivariate correlation</strong> between <span class="math inline">\(x\)</span> and <span class="math inline">\(z\)</span>.</li>
+<li><span class="math inline">\(r_{yz}\)</span> is the <strong>bivariate correlation</strong> between <span class="math inline">\(y\)</span> and <span class="math inline">\(z\)</span>.</li>
+</ul>
+<p>This equation closely resembles the formula for the partial correlation between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> adjusting for <span class="math inline">\(z\)</span>. In both cases, the numerator subtracts out the portion of the <span class="math inline">\(x\)</span>-<span class="math inline">\(y\)</span> relationship that is attributable to their shared association with <span class="math inline">\(z\)</span>. This reflects the idea of removing overlapping variance before assessing the relationship of interest.</p>
+<p>The difference lies in the denominator. For the regression coefficient, the denominator adjusts only for the variance in <span class="math inline">\(x\)</span> that overlaps with <span class="math inline">\(z\)</span>. As a result, the coefficient reflects the <strong>unique predictive contribution of <span class="math inline">\(x\)</span> to <span class="math inline">\(y\)</span></strong>, rather than the amount of variance that <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> uniquely share. This distinction explains why standardized regression coefficients and partial correlations are closely related but not identical.</p>
+</section>
+<section id="new-assumption-no-multicollinearity" class="level2" data-number="11.7">
+<h2 data-number="11.7" class="anchored" data-anchor-id="new-assumption-no-multicollinearity"><span class="header-section-number">11.7</span> New Assumption: No multicollinearity</h2>
+<p>Simple linear regression has relatively few assumptions about the predictors. Once we move to <strong>multiple regression</strong>, however, a <em>new</em> assumption is introduced: the predictors must not be excessively redundant with one another.</p>
+<p>Importantly, this does <strong>not</strong> mean that predictors must be completely unrelated. In fact, multiple regression is often used precisely because predictors are expected to be intercorrelated to some degree. The assumption is not “no correlation” among predictors, but <strong>no extreme correlation</strong> among them.</p>
+<p><strong>Multicollinearity</strong> refers to situations in which one or more predictors are <strong>highly correlated</strong> with one another. As multicollinearity increases, it becomes more difficult to isolate the unique contribution of any single predictor to the outcome variable.</p>
+<p>When predictors share substantial overlap, regression coefficients become harder to interpret. Estimates may be unstable, standard errors can inflate, and small changes in the data can lead to noticeable changes in coefficient values. In other words, multicollinearity primarily affects <strong>interpretation and precision</strong>, not overall model fit.</p>
+<section id="quantifying-multicollinearity-with-the-variance-inflation-factor-vif" class="level3" data-number="11.7.1">
+<h3 data-number="11.7.1" class="anchored" data-anchor-id="quantifying-multicollinearity-with-the-variance-inflation-factor-vif"><span class="header-section-number">11.7.1</span> Quantifying Multicollinearity with the Variance Inflation Factor (VIF)</h3>
+<p>A common diagnostic for multicollinearity is the <strong>Variance Inflation Factor (VIF)</strong>. The VIF for a given predictor reflects the extent to which that predictor can be accurately predicted from <em>all other predictors in the model</em>.</p>
+<p>Conceptually, VIF is based on the proportion of variance in a “current predictor” that is explained by the remaining predictors.</p>
+<p><span class="math display">\[
+\Large
+\text{VIF}_X = \frac{1}{1 - R_X^2}
+\]</span></p>
+<p>Here, <span class="math inline">\(R_X^2\)</span> is obtained by regressing predictor <span class="math inline">\(X\)</span> on all other predictors in the model.</p>
+<ul>
+<li>When <span class="math inline">\(R_X^2\)</span> is close to 0, the predictor shares little variance with the others, and the VIF will be close to 1.</li>
+<li>When <span class="math inline">\(R_X^2\)</span> is close to 1, the predictor is largely redundant with the others, and the VIF will be large.</li>
+</ul>
+<p>A VIF of <strong>1</strong> indicates no multicollinearity for that predictor. As a common rule of thumb, VIF values above <strong>10</strong> are taken to indicate high multicollinearity, though the practical importance of this depends on the research question and the purpose of the model.</p>
+</section>
+</section>
+<section id="from-lines-to-planes" class="level2" data-number="11.8">
+<h2 data-number="11.8" class="anchored" data-anchor-id="from-lines-to-planes"><span class="header-section-number">11.8</span> From lines to planes</h2>
+<p>In simple linear regression, we’re using a straight line to make predictions. It’s a fundamentally 2 dimensional space we’re working in. With multiple regression, we’re working in a space with more than 2 dimensions. Let’s take the simple case of 2 continuous predictors with 1 continuous outcome variable.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/multi reg plane.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%" alt="A 3D scatterplot of album sales by radio airplay and advertising budget, with a flat regression plane through the data"></p>
+</figure>
+</div>
+<p>In the image above, album sales are plotted in a 3d space. Imagine a snow globe that’s shaped like a cube rather than a globe. Each flake of snow is a data point. You shake the globe and you get a scatter plot, but in 3 dimensions instead of 2. Now imagine that one side of the cube represents 1 predictor variable and another side of the cube represents the other.</p>
+<p>In the example above, those sides represent the amount of radio air time the albums had and the money spent on advertising them. On the left side of the cube, radio play can range from 0 per week to 70. On the right side, advertisement budget can range from $0 to $2,500,000. Every album had some amount of airplay <em>and</em> some amount of money spent on advertisement. Each data point (like a snowflake in a snow cube) will rest in just the right spot inside to align with both properties.</p>
+<p>Remember how in simple linear regression (with only one predictor) all of our predictions were represented with one straight line in 2d space? In this new scenario, our predictions are represented by a flat plane in 3d space. This is like a flat sheet of paper oriented in space. For any two points along the radio play and advertisement axes, there’s exactly one spot on this piece of paper that represents our regression model’s prediction for album sales.</p>
+<p>Things get really fun (in my opinion at least) when you try to think about more complex models. For instance, a model with 3 continuous predictors would be represented by a “hyper plane” in 4d space.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./10-chi-square-fisher.html" class="pagination-link" aria-label="Chi-square and Fisher's Exact Test">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Chi-square and Fisher’s Exact Test</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./12-glm-moderation.html" class="pagination-link" aria-label="The General Linear Model and &quot;Moderation&quot;">
+        <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">The General Linear Model and “Moderation”</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

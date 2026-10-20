@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>7&nbsp; Repeated measures – The Model with a Thousand Faces</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./08-factorial-anova.html" rel="next">
+<link href="./06-differences-between-means.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-d3f7f8e73c8d287b30bcf59c2b563615.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./07-repeated-measures.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Repeated measures</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">The Model with a Thousand Faces</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About me and this book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01-variables-distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Variables and distributions</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02-probability-hypothesis-testing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Probability distributions and hypothesis testing</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-first-statistical-tests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Baby’s first statistical tests</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04-correlation-regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Correlation and Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05-tests-or-models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Are these statistical tests or prediction models?</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06-differences-between-means.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Differences between sample means</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07-repeated-measures.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Repeated measures</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08-factorial-anova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Factorial ANOVA</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09-general-linear-model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The General Linear Model</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10-chi-square-fisher.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Chi-square and Fisher’s Exact Test</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11-multiple-regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Multiple Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./12-glm-moderation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">The General Linear Model and “Moderation”</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#what-is-repeated-measures" id="toc-what-is-repeated-measures" class="nav-link active" data-scroll-target="#what-is-repeated-measures"><span class="header-section-number">7.1</span> What is “repeated measures”?</a>
+  <ul class="collapse">
+  <li><a href="#pros-and-cons-of-between-subjects-and-repeated-measures-designs" id="toc-pros-and-cons-of-between-subjects-and-repeated-measures-designs" class="nav-link" data-scroll-target="#pros-and-cons-of-between-subjects-and-repeated-measures-designs"><span class="header-section-number">7.1.1</span> Pros and cons of between-subjects and repeated measures designs</a></li>
+  </ul></li>
+  <li><a href="#repeated-measures-t-test" id="toc-repeated-measures-t-test" class="nav-link" data-scroll-target="#repeated-measures-t-test"><span class="header-section-number">7.2</span> Repeated measures <em>t</em>-test</a></li>
+  <li><a href="#one-way-repeated-measures-anova" id="toc-one-way-repeated-measures-anova" class="nav-link" data-scroll-target="#one-way-repeated-measures-anova"><span class="header-section-number">7.3</span> One-way repeated measures ANOVA</a></li>
+  <li><a href="#statistical-tests-learned-so-far" id="toc-statistical-tests-learned-so-far" class="nav-link" data-scroll-target="#statistical-tests-learned-so-far"><span class="header-section-number">7.4</span> Statistical tests learned so far</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Repeated measures</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>In this chapter, we’ll learn basically the same stuff from the last chapter (testing for differences between means), but with a small twist. Instead of testing for differences in means between two or more distinct groups, we’ll talk about how to test for differences between means when there are multiple observations per person (or whatever unit of analysis you’re using).</p>
+<section id="what-is-repeated-measures" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="what-is-repeated-measures"><span class="header-section-number">7.1</span> What is “repeated measures”?</h2>
+<p>“Repeated measures” (or within-subjects) designs involve more than 1 observation per person. Another way to look at this is that each participant is exposed to all levels of your independent variable.</p>
+<p>Many repeated measures designs are “before” and “after” studies: You measure someone’s depression levels before they start taking a drug and you measure someone’s depression levels after taking a drug. Or you might measure someone’s depression before and after therapy. Let’s say the DV in your study is weight. How much did each participant weigh before the special “boot camp”? How much did they weigh afterwards? How much did they weigh immediately afterwards versus 6 weeks afterwards? If you take a sample mean of weight on these same people at different points in time, do these sample means differ from one another?</p>
+<p>In an academic setting, you may see a pre-test and post-test design, examining how different classroom interventions affect academic performance.</p>
+<p>Any study that involves analyzing a dependent variable observed from the same individuals at multiple time points is a “repeated measures” (i.e., “within-subjects”) design/study.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/bn_wn.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="Tables demonstrating the difference between a between-subjects and repeated measures design."></p>
+</figure>
+</div>
+<section id="pros-and-cons-of-between-subjects-and-repeated-measures-designs" class="level3" data-number="7.1.1">
+<h3 data-number="7.1.1" class="anchored" data-anchor-id="pros-and-cons-of-between-subjects-and-repeated-measures-designs"><span class="header-section-number">7.1.1</span> Pros and cons of between-subjects and repeated measures designs</h3>
+<p>There are pros and cons associated with using a between-subjects or a repeated measures design for your study. <strong>A repeated measures design has more statistical power than a between-subjects design.</strong> I’ll explain why in more detail below. For now, I’ll just explain it this way: A repeated measures design is able to reduce the amount of residual (“leftover”) variance in the data by taking into account person-level information. Each person provides at least 2 data points in a repeated measures design. Each person therefore has an “average” data point unique to themselves. With that information, you cut the total variation (<span class="math inline">\(SS_{Total}\)</span>) into <span class="math inline">\(SS_{Model}\)</span> and <span class="math inline">\(SS_{Residual}\)</span>, as usual. But you can also further divide <span class="math inline">\(SS_{Residual}\)</span> into <span class="math inline">\(SS_{Subject}\)</span> and <span class="math inline">\(SS_{\text{Residual But For Real This Time}}\)</span>. (Note: Unfortunately, that last one’s not what it’s actually called.)</p>
+<p><strong>The main drawback with repeated measures designs is the risk for carryover effects.</strong> Basically, if you have someone perform the same task multiple times, this can affect how they perform the task. If I give an IQ test to a child before doing an enrichment program and then give them another IQ test afterwards, that IQ might go up, but not necessarily because of the program. People tend to get better at taking IQ tests with practice. (This specific instance of a carryover effect is called a “practice effect” because the students got better through practice.)</p>
+<p>There are all kinds of reasons why getting 2+ observations per person can “contaminate” your research. If you have participants do something tedious or boring, they might find shortcuts or stop putting as much effort into it over time.</p>
+<p><strong>The main advantage of between-subjects designs is that you can more easily infer causality.</strong> If I measure the IQ scores for one group of students (a control group) and then measure the IQ scores of a different group of students (an experimental group who went through my program), I can more confidently say that any differences observed in IQ scores between the groups is due to the program. It’s not a carryover effect because it couldn’t be. These are two completely different groups of research participants.</p>
+</section>
+</section>
+<section id="repeated-measures-t-test" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="repeated-measures-t-test"><span class="header-section-number">7.2</span> Repeated measures <em>t</em>-test</h2>
+<p>As far as the steps/calculations go, a repeated measures <em>t</em>-test is a lot like an independent samples <em>t</em>-test. With a repeated measures <em>t</em>-test, though, you have two sample means drawn from the same group of people.</p>
+<p>Let’s say we have 5 subjects who each signed up for a seminar on weight loss. You’re hoping that they will start a healthier diet and exercise routine and stick with it.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Subject #</th>
+<th style="text-align: center;">Weight before</th>
+<th style="text-align: center;">Weight after</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">200</td>
+<td style="text-align: center;">188</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">190</td>
+<td style="text-align: center;">186</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">187</td>
+<td style="text-align: center;">179</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">175</td>
+<td style="text-align: center;">166</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">240</td>
+<td style="text-align: center;">233</td>
+</tr>
+</tbody>
+</table>
+<p>With an independent samples <em>t</em>-test, you would calculate the mean for the “before” group and the mean for the “after” group. You would then test whether the difference between these two sample means is statistically significant. With a repeated measures design, however, these are all the same people! With a repeated measures t-test, you instead calculate the differences between each person’s first and second observation.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Subject #</th>
+<th style="text-align: center;">Weight before</th>
+<th style="text-align: center;">Weight after</th>
+<th style="text-align: center;">Difference</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">200</td>
+<td style="text-align: center;">188</td>
+<td style="text-align: center;">12</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">190</td>
+<td style="text-align: center;">186</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">187</td>
+<td style="text-align: center;">179</td>
+<td style="text-align: center;">8</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">175</td>
+<td style="text-align: center;">166</td>
+<td style="text-align: center;">9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">240</td>
+<td style="text-align: center;">233</td>
+<td style="text-align: center;">7</td>
+</tr>
+</tbody>
+</table>
+<p>(In most real data sets, you won’t see all the observations going in the same direction. There’d be some people gaining weight and some people staying the same.) Next, we want the average of these differences:</p>
+<p><span class="math display">\[
+\frac{12+4+8+9+7}{5}=8
+\]</span></p>
+<p>The average difference in “before” and “after” weight is 8 pounds. The <em>t</em>-statistic for a repeated measures t-test is…</p>
+<p><span class="math display">\[
+t=\frac{\bar{D}}{SEM}
+\]</span></p>
+<p>Where <span class="math inline">\(\bar{D}\)</span> is the average difference between scores and “SEM” is the standard error of the mean. SEM, in this context, represents the standard deviation of the sampling distribution of differences between observation 1 and observation 2 for samples of this size. The equation for the SEM for repeated measures <em>t</em>-tests is…</p>
+<p><span class="math display">\[
+SEM=\frac{s_{D}}{\sqrt{n}}
+\]</span></p>
+<p>Where <span class="math inline">\(s_{D}\)</span> is the standard deviation of the differences and <span class="math inline">\(\sqrt{n}\)</span> is the square root of the sample size. In the present data, <span class="math inline">\(s_{D} = 2.92\)</span> and <span class="math inline">\(\sqrt n = \sqrt5 = 2.24\)</span>. Therefore, <span class="math inline">\(SEM = \frac{2.92}{2.24}=1.30\)</span>. So, our <em>t</em>-statistic is <span class="math inline">\(\frac{8}{1.30} = 6.14\)</span>.</p>
+<p>Now we want to place our t-statistic on the appropriate <em>t</em>-distribution so we can calculate the probability of seeing a difference between observations as large (or larger) when you assume the null hypothesis is true. Degrees of freedom is equal to the number of participants (not observations!) minus 1. Since we had 5 participants in this data set, we want a <em>t</em>-distribution with 4 degrees of freedom.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/t_dist_rep.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="A t-distribution with 4 degrees of freedom."></p>
+</figure>
+</div>
+<p>Above is the <em>t</em>-distribution with 4 degrees of freedom. A <em>t</em>-value of 6.14 (and above) is shaded in gray. I’ve also shaded in <em>t</em>-values of -6.14 (and below). You probably can’t even see it, so I’ll zoom in on one of them.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/t_zoom.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="The very far, left end of a t-distribution with a nearly invisible section marked off."></p>
+</figure>
+</div>
+<p>Can you see it now? That little gray area (and its cousin on the other side of the distribution) separately represent 0.179% of the area of the <em>t</em>-distribution. Combined, they represent 0.358%. That means the probability of observing a difference in observations (“before” and “after” weights) as large (or larger) as the one we observed, when you assume the null hypothesis is true, is much, much lower than 5%. We reject the null hypothesis. (Note I got this result because the effect of the program was so huge. Normally, with such a small sample size, you wouldn’t see a statistically significant difference.)</p>
+</section>
+<section id="one-way-repeated-measures-anova" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="one-way-repeated-measures-anova"><span class="header-section-number">7.3</span> One-way repeated measures ANOVA</h2>
+<p>A one-way, repeated measures ANOVA is a lot like a one-way between-subjects ANOVA. They both only have one independent variable. The key difference is whether that independent variable is repeated across the same group of participants (making it “repeated measures”) or whether each observation comes from a separate group (making it “between-subjects”).</p>
+<p>If there are only two levels in your independent variable (e.g., “before vs.&nbsp;after”, “control vs.&nbsp;experimental”), then you have 2 sample means and you can use a repeated measures t-test. If there are more than 2 sample means, then you’ll need to use a repeated measures ANOVA.</p>
+<p>With a between-subjects (or “between-groups”) ANOVA, we split the total variation in the dependent variable into two components:</p>
+<ul>
+<li>Between-groups (or “model-based”) variance: Variance “accounted for” by knowing which group an observation comes from. If any of the groups are far from the grand mean, then knowing which group someone came from is informative enough to improve your predictions beyond just guessing the grand mean.</li>
+<li>Residual variance: Variance that’s leftover.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/variance_split.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="Two flow charts. The first, between-groups chart shows total variation breaking down into between groups and residual variation. The second, repeated measures chart shows the residuals breaking further down into subject-specific and second order residuals."></p>
+</figure>
+</div>
+<p>With a repeated measures design (regardless of whether it’s a <em>t</em>-test or ANOVA), you are able to split the residual variance into two parts: subject-specific variance and variance that’s left over after you’ve accounted for group membership and subject-specific information. It’s the leftovers of the leftovers.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/wt_total.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="A chart of each participant's weight at two different time points. Deviations from the grand mean are marked with gray lines."></p>
+</figure>
+</div>
+<p>Above is a plot for the data from the repeated measures <em>t</em>-test from before. Each point is one data point, but each subject (1 through 5) contributed two data points each. Each gray line represents the distance between each data point and the grand mean. The grand mean is the horizontal line. Remember, the grand mean averages across all data points. It doesn’t matter if it came from the “before” group or the “after” group, from subject #1 or subject #3. If you sum all these gray distances together (the squared distances, that is), you get the <span class="math inline">\(SS_{Total}\)</span>.</p>
+<p>Normally, with a between-subjects ANOVA, you can only split these total distances into between-groups and leftovers (residuals).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/wt_before_after.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="The same plot as before but the before mean and after mean are also marked with horizontal black lines."></p>
+</figure>
+</div>
+<p>Overall, the group mean for the “before” data points is slightly above the grand mean. The group mean for the “after” group is slightly below the grand mean. With a between-subjects ANOVA, this is normally when we start dividing variances up. With a repeated measures ANOVA, though, we also have averages for each individual participant.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/wt_subjects.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="Same plot as before but each subject's average weight is marked with a dotted blue line."></p>
+</figure>
+</div>
+<p>Each of the blue, horizontal dashed lines in the plot above represents the average between two data points for the same participant. Each participant contributed 2 data points: a “before” and an “after”. Therefore, each participant has a participant-level mean that averages their “before” and “after” data points together.</p>
+<p>Participant 1’s first data point is above the grand mean and their second data point is below the grand mean. If you average Participant 1’s observations together (represented by a blue dashed line connecting the two), you see that, on average, they were pretty close to the grand mean. Participant 5 weighed the most in the “before” and “after” groups. They did, however, lose some weight. Their subject-level average is in between their “before” weight and “after” weight.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/repeatedmeasurespiechart.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="Two pie charts. The left one splits the variance in weight into a small slice accounted for by before versus after and a large unaccounted slice. The right one splits that unaccounted slice into subject-specific variance and a tiny leftover residual."></p>
+</figure>
+</div>
+<p>In the figure above, on the left, we see a pie chart. This pie chart shows that about 3.07% of the total variation in our DV (weight) is accounted for by knowing whether an observation is coming from the “before” group or the “after” group. That leaves 96.93% of the variation in weight completely unaccounted for. If this weren’t a repeated measures design, we’d have a hard time inferring that there’s a real effect. The signal-to-noise ratio (3.07 to 96.93) is not very high! However, in the right side, you see the same data, but with the subject-level variation in weight highlighted in gray. That 96.93% of unaccounted for weight has been divided into 96.60% subject-specific weight and 0.33% leftover weight. That remaining 0.33% represents weight data that is accounted for neither by group (before vs.&nbsp;after) nor by subject. Now the signal-to-noise ratio (3.07 to 0.33) looks a lot better! By taking into account data that is specific to each person, we were able to isolate group-level variation and truly unknown residual variation a lot more precisely.</p>
+</section>
+<section id="statistical-tests-learned-so-far" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="statistical-tests-learned-so-far"><span class="header-section-number">7.4</span> Statistical tests learned so far</h2>
+<p>Our arsenal of statistical tests keeps growing! There are two things that are a bit different about the repeated measures ANOVA we just added though. First, a repeated measures ANOVA assumes “sphericity” in the data. What does that mean? Well, for now, just pretend it means “constant error variance” just like before. For all intents and purposes, that’s what it means. Just know that, <em>technically</em> it’s different, and should be checked.</p>
+<p>Second, instead of using eta-squared (<span class="math inline">\(\eta^2\)</span>) as a measure of effect size, repeated measures ANOVAs use partial eta-squared (<span class="math inline">\(\eta^2_{partial}\)</span>). Remember how eta-squared is just <span class="math inline">\(SS_{Model}\)</span> divided by <span class="math inline">\(SS_{Total}\)</span>? Well, now that we’ve isolated subject-level variance from the rest of the variance, we can take it out of the denominator: <span class="math inline">\(SS_{Model}\)</span> divided by <span class="math inline">\(SS_{Total}-SS_{Subject}\)</span>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 38%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>When to use</th>
+<th>Distribution / Requirements</th>
+<th>Effect size</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Single observation <em>z</em>-score</td>
+<td>You just want to know how likely (or unlikely) or how extraordinary (or average) a single observation is.</td>
+<td>Normal distribution. Population mean and population SD are known.</td>
+<td>N/A</td>
+</tr>
+<tr class="even">
+<td>Group <em>z</em>-test</td>
+<td>You want to know whether a sample mean (drawn from a normal distribution) is higher or lower than a certain value (usually the population average)</td>
+<td>Normal distribution. Population mean and population SD are known.</td>
+<td>N/A</td>
+</tr>
+<tr class="odd">
+<td>1 sample <em>t</em>-test</td>
+<td>You want to know whether a sample mean is different from a certain value (either 0 or the population average)</td>
+<td><em>t</em>-distribution. Population mean is known, but not the population SD</td>
+<td>N/A</td>
+</tr>
+<tr class="even">
+<td>Correlation</td>
+<td>Measuring the degree of co-occurrence between two continuous variables</td>
+<td>Linear relationship between variables, no outliers, normally distributed residuals.</td>
+<td>Pearson’s <em>r</em></td>
+</tr>
+<tr class="odd">
+<td>Independent samples <em>t</em>-test</td>
+<td>Determine whether there is a difference between two sample means</td>
+<td><em>t</em>-distribution, normally distributed samples with roughly equal variances</td>
+<td>Cohen’s <em>d</em></td>
+</tr>
+<tr class="even">
+<td>One-way, between subjects ANOVA</td>
+<td>Determine whether there is a difference among three or more sample means from independent groups</td>
+<td><em>F</em>-distribution, normally distributed samples with roughly equal variances</td>
+<td>Eta-squared (<span class="math inline">\(\eta^2\)</span>)</td>
+</tr>
+<tr class="odd">
+<td>Repeated measures <em>t</em>-test</td>
+<td>Determine whether there is a difference between two sample means when those derive from multiple observations from the same units (usually people) at different time points</td>
+<td><em>t</em>-distribution, the differences in observations are normally distributed</td>
+<td>Cohen’s <em>d</em></td>
+</tr>
+<tr class="even">
+<td>One-way, repeated measures ANOVA</td>
+<td>Determine whether there is a difference among three or more sample means when those derive from multiple observations from the same units (usually people) at different time points</td>
+<td><em>F</em>-distribution, normally distributed samples, sphericity</td>
+<td>Partial eta-squared (<span class="math inline">\(\eta^2_{partial}\)</span>)</td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./06-differences-between-means.html" class="pagination-link" aria-label="Differences between sample means">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Differences between sample means</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./08-factorial-anova.html" class="pagination-link" aria-label="Factorial ANOVA">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Factorial ANOVA</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

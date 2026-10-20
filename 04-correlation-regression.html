@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>4&nbsp; Correlation and Regression – The Model with a Thousand Faces</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./05-tests-or-models.html" rel="next">
+<link href="./03-first-statistical-tests.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-d3f7f8e73c8d287b30bcf59c2b563615.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./04-correlation-regression.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Correlation and Regression</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">The Model with a Thousand Faces</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About me and this book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01-variables-distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Variables and distributions</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02-probability-hypothesis-testing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Probability distributions and hypothesis testing</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-first-statistical-tests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Baby’s first statistical tests</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04-correlation-regression.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Correlation and Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05-tests-or-models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Are these statistical tests or prediction models?</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06-differences-between-means.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Differences between sample means</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07-repeated-measures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Repeated measures</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08-factorial-anova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Factorial ANOVA</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09-general-linear-model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The General Linear Model</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10-chi-square-fisher.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Chi-square and Fisher’s Exact Test</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11-multiple-regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Multiple Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./12-glm-moderation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">The General Linear Model and “Moderation”</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#correlation-coefficients" id="toc-correlation-coefficients" class="nav-link active" data-scroll-target="#correlation-coefficients"><span class="header-section-number">4.1</span> Correlation coefficients</a>
+  <ul class="collapse">
+  <li><a href="#how-to-calculate-a-correlation-coefficient" id="toc-how-to-calculate-a-correlation-coefficient" class="nav-link" data-scroll-target="#how-to-calculate-a-correlation-coefficient"><span class="header-section-number">4.1.1</span> How to calculate a correlation coefficient</a></li>
+  <li><a href="#testing-correlation-coefficients-for-statistical-significance" id="toc-testing-correlation-coefficients-for-statistical-significance" class="nav-link" data-scroll-target="#testing-correlation-coefficients-for-statistical-significance"><span class="header-section-number">4.1.2</span> Testing correlation coefficients for statistical significance</a></li>
+  <li><a href="#confidence-intervals-for-correlation-coefficients" id="toc-confidence-intervals-for-correlation-coefficients" class="nav-link" data-scroll-target="#confidence-intervals-for-correlation-coefficients"><span class="header-section-number">4.1.3</span> Confidence intervals for correlation coefficients</a></li>
+  <li><a href="#tomatometer-example" id="toc-tomatometer-example" class="nav-link" data-scroll-target="#tomatometer-example"><span class="header-section-number">4.1.4</span> Tomatometer example</a></li>
+  <li><a href="#assumptions-of-correlational-analysis" id="toc-assumptions-of-correlational-analysis" class="nav-link" data-scroll-target="#assumptions-of-correlational-analysis"><span class="header-section-number">4.1.5</span> Assumptions of correlational analysis</a></li>
+  </ul></li>
+  <li><a href="#simple-linear-regression" id="toc-simple-linear-regression" class="nav-link" data-scroll-target="#simple-linear-regression"><span class="header-section-number">4.2</span> Simple linear regression</a>
+  <ul class="collapse">
+  <li><a href="#assumptions-of-simple-linear-regression" id="toc-assumptions-of-simple-linear-regression" class="nav-link" data-scroll-target="#assumptions-of-simple-linear-regression"><span class="header-section-number">4.2.1</span> Assumptions of simple linear regression</a></li>
+  </ul></li>
+  <li><a href="#statistical-tests-learned-so-far" id="toc-statistical-tests-learned-so-far" class="nav-link" data-scroll-target="#statistical-tests-learned-so-far"><span class="header-section-number">4.3</span> Statistical tests learned so far</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Correlation and Regression</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>In its simplest form, correlation analyses are a way of determining whether two variables are associated with each other. Do people with high self-esteem tend to have better grades? Do people with more depression-like symptoms tend to spend more time on their smartphone on a given day?</p>
+<p>We don’t know if these variables are necessarily <strong><em>causing</em></strong> each other. We talked all about that in an earlier chapter. Correlation does not imply causation. But correlation <strong><em>does</em></strong> imply that two variables coincide. (Correlation implies coincidence.) For the first part of this chapter, I’ll describe the specifics behind correlational analyses. After that, I’ll describe simple linear regression. (For now, I’ll call it “regression” for short.)</p>
+<p>Regression is very tightly linked with correlation. They’re actually two sides of the same coin. So why learn both? Well, simple correlational analyses are good for when you want to answer a simple question about whether two variables are statistically linked with one another. Regression, though, is a more versatile method that can be expanded to address more complex questions. In fact (SPOILER ALERT!) this whole book is basically just a book about regression. But I’ll save that for later chapters.</p>
+<section id="correlation-coefficients" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="correlation-coefficients"><span class="header-section-number">4.1</span> Correlation coefficients</h2>
+<p>A correlation coefficient (<em>r</em>, also known as “Pearson’s <em>r</em>”) quantifies the degree to which two variables coincide. A positive correlation means that, as the first variable goes up, the second variable tends to go up as well. A negative correlation means that, as the first variable goes up, the second variable tends to go down. Correlation coefficients can be as low as -1 or as high as +1.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/correlation_examples.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="Three scatterplots. One's a perfect positive correlation, one has no correlation, and the last has a perfect negative correlation."></p>
+</figure>
+</div>
+<p>A perfect positive correlation (r = 1.00) means that an increase in the first variable corresponds to a perfectly predictable increase in the second variable (and <em>vice versa</em>). The correlation between daily temperatures expressed in Fahrenheit would have a perfectly positive correlation with daily temperatures expressed in Celsius. They are, after all, the same information re-phrased into different formats. A perfectly negative correlation (r = -1.00) means that an increase in variable 1 corresponds to a perfectly predictable decrease in variable 2 (and <em>vice versa</em>). The correlation between my daily spending and my total wealth are perfectly negatively correlated. For every dollar I spend, I lose a dollar in total wealth.</p>
+<p>A correlation of zero (r = 0.00) means that the two variables do not coincide at all. Knowing something about the first variable tells you nothing about the second variable. Perfectly non-existent correlations like these do exist: Your shoe size doesn’t correlate with the last two digits of your phone number. It can be difficult, though, to think of two <strong><em>interesting</em></strong> variables that do not coincide whatsoever. People’s shoe size and their self-esteem could be correlated, however slightly. People’s daily caloric intake and the daily temperature probably have some small correlation with each other.</p>
+<p>Correlation coefficients only measure the degree to which two variables coincide. That doesn’t mean the two variables are causing each other. Case in point: there is a well-known correlation between the number of weddings in a given month and the number of June bugs lurking about. Does that mean that June bugs feel the love in the air and fly into town when there’s a wedding? Do people plan their weddings so they can have drunken bugs flopping around outside on their special day? No.&nbsp;Both variables are caused by a third variable: summer. People tend to have weddings during the summer and that just so happens to be June bug season.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/strengths_of_corr.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%" alt="A series of 4 scatterplots. The first one has a correlation of +1, the next is 0.8, then 0.5, then 0.2."></p>
+</figure>
+</div>
+<p>As you might expect, most interesting correlations are nowhere near a perfect +1 or -1 value. Most relationships between psychological variables are closer to the 0.15 to 0.20 range. A perfect correlation, when shown on a scatterplot, looks like a bunch of dots falling on a straight line. As a correlation coefficient shifts between a perfect +1 or -1, it will look more like a cloudy line of data points. In the figure above you can see that a correlation of 0.8 looks like a cloudy straight line. As <em>r</em> keeps decreasing, getting closer to 0, it looks less like a cloudy line and more like just a cloud.</p>
+<section id="how-to-calculate-a-correlation-coefficient" class="level3" data-number="4.1.1">
+<h3 data-number="4.1.1" class="anchored" data-anchor-id="how-to-calculate-a-correlation-coefficient"><span class="header-section-number">4.1.1</span> How to calculate a correlation coefficient</h3>
+<p>Remember how we calculated the variance (or <span class="math inline">\(SS_{Total}/df\)</span>)? We added up the squared distance between each data point and its mean? Then we divided the sum of these squared distances by degrees of freedom? Like, we basically ended up with “the average squared distance between each data point and its mean”?</p>
+<p>With correlation coefficients, we use a fairly similar line of reasoning. Rather than find the total amount of variation in a single variable, though, we end up looking for the total amount of <strong>CO</strong>variation between two variables. Let’s look at <span class="math inline">\(SS_{Total}\)</span> again:</p>
+<p><span class="math display">\[
+SS_{Total} = \sum(x - \bar{x})^2
+\]</span></p>
+<p>When translated into words, this would read something like, “You get ‘sum of squares total’ when you add up the (squared) difference between each value of x and the mean of x.” To get the variance, you divide by degrees of freedom:</p>
+<p><span class="math display">\[
+variance(x) = \frac{\sum(x - \bar{x})^2}{df}
+\]</span></p>
+<p><span class="math inline">\(df\)</span> is equal to the number of data points, N, for population variances but equal to N - 1 for sample variances. With a covariance, we don’t just want to see how much x tends to deviate from the mean of x, we also want to see how much a second variable (y) tends to deviate from its own mean (<span class="math inline">\(\bar{y}\)</span>). Most importantly, we want to see how much deviations of x from its own mean tend to go in the same direction as deviations of y from its own mean.</p>
+<p>The numerator of a covariance is…</p>
+<p><span class="math display">\[
+\sum(x - \bar{x})(y-\bar{y})
+\]</span></p>
+<p>The deviations of x from its mean are multiplied by the deviations of y from its mean. As you add up these products, the running total will grow larger if the deviations are going in the same direction. Recall that a positive number times a positive number is a positive number. A negative number times a negative number is a positive number. However, if one of the numbers is negative and the other is positive, then the product will be negative.</p>
+<p>Thus, <span class="math inline">\(\sum(x - \bar{x})(y-\bar{y})\)</span> will grow larger if x and y are deviating in the same direction but stay small if they are deviating in opposite directions.</p>
+<p>To calculate the covariance from here, we divide by degrees of freedom (<span class="math inline">\(df\)</span>):</p>
+<p><span class="math display">\[
+\frac{\sum(x - \bar{x})(y-\bar{y})}{df}
+\]</span></p>
+<p>I highly recommend you look back and forth between the formula of the variance for a single variable, x, and the formula for the covariance between two variables, x and y. Look at their similarities and differences. Reflect on what they are for.</p>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="text-center quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><span class="math display">\[\frac{\sum(x - \bar{x})^2}{df}\]</span></p>
+<p><strong>Variance of x</strong></p>
+</div>
+<div class="text-center quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><span class="math display">\[\frac{\sum(x - \bar{x})(y-\bar{y})}{df}\]</span></p>
+<p><strong>Covariance between x and y</strong></p>
+</div>
+</div>
+</div>
+<p>The variance of x is a measure of how spread out the variable x is. Is it widely dispersed? Or, is it pretty narrow, with low dispersion? We answer these questions by calculating something closely analogous to the average deviation from the mean of x. The covariance of x and y is an attempt at answering a different, but related, set of questions: To what degree do x and y typically deviate in the same direction? When x values are higher than usual, are the corresponding y values higher than usual? When x values are lower than usual, are the corresponding y values lower than usual? What is the average (or “typical”) amount by which x and y vary in the same direction?</p>
+<p>To calculate a correlation coefficient, you standardize the covariance so that it can only range between -1 to +1. You do this by dividing the covariance by the product of the standard deviations of x and y.</p>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="text-center quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><span class="math display">\[cov(x,y)=\frac{\sum(x - \bar{x})(y-\bar{y})}{df}\]</span></p>
+<p><strong>Covariance between x and y</strong></p>
+</div>
+<div class="text-center quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><span class="math display">\[corr(x,y) = \frac{cov(x,y)}{sd(x)sd(y)}\]</span></p>
+<p><strong>Correlation between x and y</strong></p>
+</div>
+</div>
+</div>
+</section>
+<section id="testing-correlation-coefficients-for-statistical-significance" class="level3" data-number="4.1.2">
+<h3 data-number="4.1.2" class="anchored" data-anchor-id="testing-correlation-coefficients-for-statistical-significance"><span class="header-section-number">4.1.2</span> Testing correlation coefficients for statistical significance</h3>
+<p>When you observe a seemingly large correlation coefficient, that doesn’t mean that there’s necessarily a real correlation between the two variables. With small samples, you might be seeing flukey results: differences between groups that aren’t real or correlations that aren’t real. Small samples are just crazy that way. That’s why you want to calculate a <em>p</em>-value and formally test whether an observed correlation is statistically significant.</p>
+<p>To do this, we use the <em>t</em>-distribution. The degrees of freedom are equal to the number of pairs of data points minus 2. So, if you have 20 pairs of observations for each variable (40 observations overall) then degrees of freedom would be 18. Let’s say I wanted to know whether there was a correlation between students’ GPA and their self-esteem. If I recruited 20 students for a study and asked them their GPA and gave them a self-esteem survey, I’d end up with 20 pairs of observations, but 40 observations overall (20 GPAs and 20 self-esteem scores, all from 20 people). Degrees of freedom would be 18: the number of pairs minus 2.</p>
+<p>To test whether a correlation coefficient is statistically significant, we first formulate a null hypothesis: Suppose there is no correlation (<span class="math inline">\(H_0: \rho=0\)</span>). The correlation between variable 1 and variable 2 is 0. With this assumption in place, I can determine the probability of observing the correlation coefficient I calculated from my sample, <em>r</em>. This sample correlation (<em>r</em>) is an estimate of the population correlation (<span class="math inline">\(\rho\)</span>, pronounced like “row”), and I want to know if I can reject the null hypothesis that <span class="math inline">\(\rho\)</span> = 0. If the <em>p</em>-value is low enough (below .05), then we reject the null hypothesis. We conclude that the population correlation (<span class="math inline">\(\rho\)</span>) is not equal to 0.</p>
+<p>Let’s work through a simple example with only 8 pairs of observations:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Subject</th>
+<th style="text-align: center;">GPA</th>
+<th style="text-align: center;">Self-esteem</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3.4</td>
+<td style="text-align: center;">30</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3.0</td>
+<td style="text-align: center;">32</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2.5</td>
+<td style="text-align: center;">30</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3.3</td>
+<td style="text-align: center;">31</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">2.2</td>
+<td style="text-align: center;">28</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">3.4</td>
+<td style="text-align: center;">30</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">2.0</td>
+<td style="text-align: center;">20</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">2.5</td>
+<td style="text-align: center;">40</td>
+</tr>
+</tbody>
+</table>
+<p>We have 8 subjects. For each of these subjects, we have a GPA and a self-esteem score. The sample correlation between subjects’ GPA and self-esteem in this sample is <em>r</em> = 0.33. Sounds pretty good, right? Remember, most psychological variables have much lower correlations between each other.</p>
+<p>We used the <em>t</em> distribution a couple of times in the previous chapter. We use the same distribution to test whether correlations are statistically significant. The <em>t</em> value we calculate means the same thing, but isn’t calculated the same way. Here’s a reminder of what it means: <em>t</em> is a measure of how far our statistical effect has deviated from where the null hypothesis says it should be. For a 1 sample <em>t</em>-test, <em>t</em> was literally equivalent to “how far is our sample mean from our population mean (in standard errors)”: <span class="math inline">\(t = \frac{\bar{x}-\mu}{SEM}\)</span>.</p>
+<p>In the present context, we’re asking how far our sample correlation (<span class="math inline">\(r\)</span>) got from the null-hypothesized population correlation (<span class="math inline">\(\rho\)</span>): “<span class="math inline">\(r - \rho\)</span>”. If the null hypothesis is true, then “<span class="math inline">\(r - \rho\)</span>” should be close to zero. And we’re still wanting to look at the distance between the two in standardized units. There’s no “standard error of the correlation,” but in the following equation you get something pretty similar:</p>
+<p><span class="math display">\[
+t = \frac{r - \rho}{\sqrt{(1-r^2)/(n-2)}}
+\]</span></p>
+<p>According to the null hypothesis, <span class="math inline">\(\rho\)</span> = 0, so the above equation could be simplified to…</p>
+<p><span class="math display">\[
+t = \frac{r}{\sqrt{(1-r^2)/(n-2)}}
+\]</span></p>
+<p>Once we calculate <em>t</em>, we have a measure of how much our sample correlation deviated from 0 in standardized units. Other statistics books present the above equation like this:</p>
+<p><span class="math display">\[
+t = \frac{r\sqrt{n-2}}{\sqrt{1-r^2}}
+\]</span></p>
+<p>With a little bit of basic algebra, you could show that these equations are the same, just re-arranged a bit. I prefer the first one, personally, because it more closely approximates what we mean when we say, “How big is our sample correlation (r) in standard units?” or “How far from zero did <em>r</em> get (in standardized units)?”</p>
+<p>In our current example…</p>
+<p><span class="math display">\[
+t = \frac{0.33}{\sqrt{(1-0.33^2)/(8-2)}} = 0.8563008
+\]</span></p>
+<p>The probability of observing a <em>t</em> value of -0.856 (or lower) or +0.856 (or higher) on a <em>t</em>-distribution with 6 degrees of freedom is 0.42.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/newt.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="A t-distribution with 6 degrees of freedom"></p>
+</figure>
+</div>
+<p>In other words, the <em>p</em>-value associated with a correlation that high (<em>r</em> = 0.33), with 6 degrees of freedom, is 0.42. That means there’s a 42% chance of observing a correlation at least as far from zero as 0.33 (in either direction) when you assume the null hypothesis is true. When you assume there is no correlation, and you observe a correlation of 0.33, but from only 8 observations, we can’t reject the null hypothesis. It’s still very possible that the real correlation is zero. That’s the problem with small samples. They’re so erratic they produce extremely small and large values. That’s why we use statistical tests to make sure we’re not falling for these unreliable results.</p>
+<p>Technically, I rounded the sample correlation in this example to 0.33 instead of the full number that my stats program gives. When you don’t do this, the <em>t</em>-value equals 0.86401. The probability of observing a <em>t</em>-value as high as that (or higher), when you assume the null hypothesis is true, is about 21%. In other words, the interval between <em>t</em> = 0.86401 and <em>t</em> = <span class="math inline">\(+\infty\)</span> takes up about 21% of the area under the curve of the <em>t</em>-distribution.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/two_tail_t.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="The t-distribution with areas marked that are less than -0.86 or greater than 0.86."></p>
+</figure>
+</div>
+<p>The interval between <em>t</em> = -0.86401 and <em>t</em> = <span class="math inline">\(-\infty\)</span> also takes up about 21% of the area under the curve. Put together, the probability of observing a <em>t</em> statistic of -0.86401 (or lower) or +0.86401 (or higher) (when you assume the null hypothesis is true) is 42%. That’s our <em>p</em>-value.</p>
+<p>The gray areas in the figure above mark out these intervals. Together, they take up 42% of the area under the curve. If we were in an oddly shaped room (one shaped like a <em>t</em>-distribution with 6 degrees of freedom), there’s a 42% chance that a bouncy ball would land somewhere in the shaded areas if we made it ricochet and bounce around in a truly random fashion.</p>
+</section>
+<section id="confidence-intervals-for-correlation-coefficients" class="level3" data-number="4.1.3">
+<h3 data-number="4.1.3" class="anchored" data-anchor-id="confidence-intervals-for-correlation-coefficients"><span class="header-section-number">4.1.3</span> Confidence intervals for correlation coefficients</h3>
+<p>Remember the 95% confidence interval? Confidence intervals for correlation coefficients have virtually the same <strong><em>conceptual</em></strong> meaning as confidence intervals for sample means. They’re just calculated very differently. Recall that a confidence interval for a sample mean represents a range of plausible values that the population mean might have. Let’s say you have a sample of Lord of the Rings fans and you calculate their average IQ. It comes out to 105. Since this is only a <strong><em>sample</em></strong> average, you want to know how much uncertainty is associated with your estimate of the population average. Let’s say you take your sample size into account, the dispersion of the data, and all of that. You plug these numbers into the correct equation and you get a 95% confidence interval of 101 and 109. This means that, while your average IQ from your sample was 105, your data tell you that the population average IQ could plausibly be between 101 and 109.</p>
+<p>Let’s switch over to correlations. Let’s say you ask people to rate how strongly they love Lord of the Rings on a scale ranging from 0 (don’t like LotR at all) to 100 (love LotR the most). For each person’s 0-to-100 score of LotR fandom, you also have a corresponding IQ. Let’s say you calculate a correlation coefficient of 0.40 between LotR fandom and IQ. That’s a pretty strong correlation! But wait, let’s say this was based on a small sample. So, when you run the numbers, you might end up with a 95% confidence interval of -0.20 to 0.60. This would mean that there’s so much uncertainty associated with your estimated correlation coefficient that you can’t even be sure whether it’s positive or negative! One of the plausible values for the population correlation is 0.</p>
+<p>Calculating a confidence interval for a sample mean was relatively straightforward. It was straightforward mostly because we (safely) assume that the sampling distribution of the sample mean is symmetrical, i.e., normally distributed. The sampling distribution for a correlation coefficient, though, won’t necessarily be symmetrical. This is because correlations can’t go below -1 or above +1. Thus, if you’re working with a very high or very low correlation, there’s a hard “floor” or “ceiling” limiting possible values the correlation might take. You can’t have symmetrical tails in a sampling distribution if you’re close to either the floor or the ceiling of possible values. The resulting distribution would be skewed.</p>
+<p>A clever statistician named Ronald Fisher figured out a way around this. First, you transform your <em>r</em> into a <em>z</em>:</p>
+<p><span class="math display">\[
+z = \ln\left(\frac{1+r}{1-r}\right)0.5
+\]</span></p>
+<p>These <em>z</em>-scores should tend to center around <span class="math inline">\(\ln\left(\frac{1+r}{1-r}\right)0.5\)</span> and have a standard deviation of <span class="math inline">\(\sqrt{1/(n - 3)}\)</span>. All you need now is the <em>z</em> score that cuts off appropriate areas under the curve. <em>z</em> scores of -1.96 and +1.96 capture the middle 95% of the area under the curve of a normal distribution. Everything below -1.96 or above +1.96 constitutes the outer 5% of the area under the curve. Thus, the 95% CI for a sample r is…</p>
+<p><span class="math display">\[
+z \pm 1.96\sqrt{1/(n-3)}
+\]</span></p>
+<p>In the data above, we observed a correlation coefficient of 0.33 based on 8 observations. Thus:</p>
+<p><span class="math display">\[
+z = \ln\left(\frac{1+0.33}{1-0.33}\right)0.5 = 0.34...
+\]</span></p>
+<p>The standard deviation would be…</p>
+<p><span class="math display">\[
+\sqrt{1/(8-3)} = 0.447...
+\]</span></p>
+<p>Thus, the 95% CI for our correlation coefficient would be…</p>
+<p><span class="math display">\[
+0.34 \pm 0.447(1.96) = [-0.53612, 1.21612]
+\]</span></p>
+<p>This interval, [-0.53612, 1.21612] is still formatted as <em>z</em>-scores, though. To transform them into <em>r</em>-scores, we invert the Pearson’s <em>r</em>-to-<em>z</em> formula above, turning it into a <em>z</em>-to-<em>r</em> formula instead:</p>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="text-center quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><span class="math display">\[z = \ln\left(\frac{1+r}{1-r}\right)0.5\]</span></p>
+<p><strong>r to z formula</strong></p>
+</div>
+<div class="text-center quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><span class="math display">\[r = \frac{e^{2z}-1}{e^{2z}+1}\]</span></p>
+<p><strong>z to r formula</strong></p>
+</div>
+</div>
+</div>
+<p>If we plug the boundaries of our 95% confidence intervals into this new equation we get…</p>
+<p><span class="math display">\[
+r = \frac{e^{2(-0.53612)}-1}{e^{2(-0.53612)}+1} = -0.49
+\]</span></p>
+<p>…and…</p>
+<p><span class="math display">\[
+r = \frac{e^{2(1.21612)}-1}{e^{2(1.21612)}+1} = 0.84
+\]</span></p>
+<p>Thus, the correlation for the data above is 0.33, 95% CI[-0.49, 0.84]. That means we observed a correlation of 0.33, but based on our sample size, it really could’ve been anywhere between -0.49 and 0.84. There could be a really large negative correlation between GPA and self-esteem (<em>r</em> = -0.49) or there could be a large positive correlation between the two (<em>r</em> = 0.84). Maybe there’s no correlation. A correlation of zero is within the lower and upper boundaries of our 95% confidence interval.</p>
+<p>If you wrote this result up in APA style, you’d say something like, “There was no statistically significant correlation between GPA and self-esteem, <em>r</em>(6) = 0.33, 95% CI[-0.49, 0.84], <em>p</em> = .421.”</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/gpa_scatter.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="A scatterplot with some, if anything, weakly correlated data."></p>
+</figure>
+</div>
+<p>You can see from the scatterplot above that there’s maybe some tendency for GPA to rise as self-esteem rises. But there’s just not enough data to strongly confirm this possibility. No wonder the correlation isn’t statistically significant.</p>
+<p>Now, let’s say we took the same data and repeated it five times. Subject 1 is copied and pasted to be subject 9. Subject 2 is copied and pasted to be subject 10. <strong><em>Never do this kind of thing in real life!</em></strong> I’m just illustrating the effect of sample size on statistical significance. The correlation would stay the same, but the larger sample size would change some things. Degrees of freedom would be 38 instead of 6. This changes the shape of the t-distribution and, thus, all the corresponding probabilities of observing different <em>t</em>-values. The <em>t</em>-value associated with a correlation of 0.33 would go from 0.86 to 2.17. When we assume the null hypothesis is true, there is only a 1.79% percent chance of observing a t-score of 2.17 or higher. There’s also only a 1.79% chance of observing a t-score of -2.17 or lower. Therefore, the combined probability of observing a t-score as large (or larger [in absolute value]) as the one we did is 2 x 1.79% or about 3.6%. There’s our p-value: The probability of observing the data that we did (or data more extreme), when you assume the null hypothesis is true, is 3.6%.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/two_tail_t_reloaded.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="t-distribution with areas marked off less than -2.17 and greater than 2.17."></p>
+</figure>
+</div>
+<p>The new APA-style write up would be, “There was a statistically significant correlation between GPA and self-esteem, <em>r</em>(38) = 0.33, 95% CI[0.02, 0.58], <em>p</em> = .036.” Now that <em>p</em> is less than .05 our results are statistically significant. The 95% CI also became narrower. The lower end of the interval is still very close to zero (0.02). Therefore, we just barely achieved statistical significance with this hypothetical example.</p>
+</section>
+<section id="tomatometer-example" class="level3" data-number="4.1.4">
+<h3 data-number="4.1.4" class="anchored" data-anchor-id="tomatometer-example"><span class="header-section-number">4.1.4</span> Tomatometer example</h3>
+<p>To further illustrate the concept of correlation, I’m going to go gather some real data from a publicly accessible source: <a href="https://www.rottentomatoes.com/">Rotten Tomatoes</a>. Each movie on this site has a Tomatometer score representing how much critics (or typical moviegoers) liked the movie. The higher the score, the more people liked the movie.</p>
+<p>I went to Quentin Tarantino’s page and recorded the Tomatometer score for each of the films that he directed and the year that film came out.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/qt_over_time.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="A scatterplot showing tomatometer scores kind of sort of going down over time."></p>
+</figure>
+</div>
+<p>There was a negative correlation between Quentin Tarantino’s Tomatometer scores and the year of each film’s release, <em>r</em> = -0.44, 95% CI[-0.84, 0.26]. However, this correlation was not statistically significant, <em>t</em>(8) = -1.40, <em>p</em> = .198. It appears as if Tarantino’s movies are <strong>not</strong> getting worse over time. Or, if they are, we don’t have sufficient evidence to conclude that in the current analysis. In other words, we may have just committed a type 2 error: There could be a real effect (movies getting worse over time), but we failed to conclude that the effect is there.</p>
+<p>Unfortunately, many researchers don’t take “the data don’t agree” for an answer. You can always go and change different things about your data in order to change the <em>p</em>-value coming out the other end. You might even come up with plausible-sounding reasons after the fact. For instance, should Tarantino’s “Death Proof” really be included as one of his films? I mean, “Death Proof” was more of a short film than a feature-length film like all the others in the data set. If we included “Death Proof”, should we also include other short-form media he directed? Commercials? Music videos?</p>
+<p>If you remove “Death Proof” from the data, you come very close to achieving statistical significance. “There was a negative correlation between Quentin Tarantino’s Tomatometer scores and the year of each film’s release, <em>r</em> = -0.64, 95% CI[-0.92, 0.04]. This effect, however did not reach statistical significance, <em>t</em>(7) = -2.22, <em>p</em> = .062.”</p>
+<p>See how the correlation, degrees of freedom, <em>t</em>-score, and <em>p</em>-value all changed? All I did was remove one pesky data point that didn’t agree with my hypothesis that I’m trying to force.</p>
+<p>This time our data refused to take “I don’t like you” for an answer and stayed statistically non-significant! People will sometimes call <em>p</em>-values like the one above (just slightly higher than .05) “marginally significant”. They’re just being sore losers. But keep in mind that people will sometimes play around with different criteria for including or excluding some data to change the statistical significance of the result. They might even completely change the way they approach analyzing their data. This practice is called “<em>p</em>-hacking”. They’re pulling dirty little tricks to try and get the <em>p</em>-value on the “good side” of 0.05.</p>
+<p>Now let’s take a look at M. Night Shyamalan’s movies (side note: I got the idea to use M. Night Shyamalan’s Rotten Tomato scores to teach correlation and regression from Andrew Littlefield. I wanted to give him credit for that. If he stole this idea from someone else, he never told us.). A lot of people used to say that Shyamalan’s first film “The Sixth Sense” was his best work, but that he kind of went downhill from there. You can almost see it in the scatter plot below.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/m.night.scatter.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="A scatterplot showing the relationship between tomatometer scores and time."></p>
+</figure>
+</div>
+<p>“There was a negative correlation between M. Night Shyamalan’s Tomatometer scores and the year of each film’s release, <em>r</em> = -0.22, 95% CI[-0.67, 0.35]. However, this correlation was not statistically significant, <em>t</em>(12) = -0.79, <em>p</em> = .443.”</p>
+<p>Dang! The results weren’t statistically significant! Well, you know what? People have said that M. Night has been having a resurgence lately. They say he hit rock bottom with “The Last Airbender” and decided to pull out all the stops and start churning out bangers like “The Visit” and “Split.” If you’ve seen “Glass” or “Old”, however, you’ll know this isn’t the case. Regardless, I can mess with my data and exclude films that preceded his “resurgence.”</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/m.night.p2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="A scatterplot showing the relationship between tomatometer scores and time, for only the later films."></p>
+</figure>
+</div>
+<p>“There was a negative correlation between M. Night Shyamalan’s Tomatometer scores and the year of each film’s release, <em>r</em> = -0.77, 95% CI[-0.94, -0.28]. This correlation was statistically significant, <em>t</em>(8) = -3.44, <em>p</em> = .008.”</p>
+<p>There we go! <em>p</em>-hacking worked this time.</p>
+</section>
+<section id="assumptions-of-correlational-analysis" class="level3" data-number="4.1.5">
+<h3 data-number="4.1.5" class="anchored" data-anchor-id="assumptions-of-correlational-analysis"><span class="header-section-number">4.1.5</span> Assumptions of correlational analysis</h3>
+<p>Every statistical test comes with assumptions. For instance, when we look at a <em>z</em>-score or conduct a group z-test, we’re assuming the variable of interest is normally distributed in the population. If our variable of interest is skewed, then a group <em>z</em>-test is actually an inappropriate way to model the data. We’re pushing a square block through a circular hole.</p>
+<p>There are two important assumptions I want to draw your attention to when it comes to correlation tests.</p>
+<ol type="1">
+<li><strong>The relationship between the variables is linear:</strong> As the IV increases, the DV either increases or decreases in a straight line. The rate at which the DV increases or decreases doesn’t change. If it did change, you’d get a curvilinear relationship like the one in the top right corner of the figure below.</li>
+<li><strong>There are no outliers in the data:</strong> In a small data set, just one observation can dramatically increase or decrease the correlation coefficient. Outliers can wreak havoc on a large data set too. That’s why it’s important to plot your data and examine whether any of the observations are far outside the general trend.</li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/anscombes_quartet.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="4 scatterplots, all with the same correlation but various non-linear relationships or an outlier present."></p>
+</figure>
+</div>
+<p>The figure above depicts Anscombe’s Quartet: four different data sets that have the same correlation between the independent and the dependent variables, but don’t all match the assumptions of correlation (and regression) analyses. You can tell from the top-right data set that there isn’t really a linear relationship between the two variables but a curvilinear one. One of the assumptions of the correlation test has been violated. The bottom 2 sets have a single point that is “inflating” the correlation coefficient. It’s making the overall set appear more linear than it really is or pulling the line in a direction it shouldn’t be going in.</p>
+<p>It’s always important to plot your data and examine whether there’s really a linear relationship between your variables because, after all, the test you want to use <strong><em>ASSUMES</em></strong> the relationship is linear. If you violate these assumptions, then the <em>p</em>-values that come out the other end of your analysis are not accurate.</p>
+</section>
+</section>
+<section id="simple-linear-regression" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="simple-linear-regression"><span class="header-section-number">4.2</span> Simple linear regression</h2>
+<p>Regression analysis is used to make predictions. At least that’s what a lot of people say. Really, though, simple regression analyses like the ones I’m about to describe do the same thing as correlational analyses. Regression underlies most of the statistics currently in use in the social sciences. Regression is at the foundation.</p>
+<p>In a simple linear regression model, the independent variable is being used to predict the dependent variable. Sometimes, we’re not trying to actually make predictions, but to test whether you <strong>could</strong> reliably make such predictions. The “simple” in “simple linear regression” is there because we only have one independent variable. The “linear” in “simple linear regression” is there because we are using a single straight line to make predictions.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/straight_line_equations.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="Two linear equations plotted on a graph."></p>
+</figure>
+</div>
+<p>Every straight line can be described by a linear equation of the form “y = mx + b”. Here, “m” is the slope of the line and “b” is the intercept of the line, the place where the line crosses the y-axis when x = 0.</p>
+<p>With some slight changes and rearranging, we get:</p>
+<p><span class="math display">\[
+\hat{y} = b_0 +xb_1
+\]</span></p>
+<p>“<span class="math inline">\(\hat{y}\)</span>” is the predicted level of y, our dependent variable. “<span class="math inline">\(b_0\)</span>” is the intercept. It’s the place where our regression line crosses over the y-axis when x = 0, just like before. “<span class="math inline">\(b_1\)</span>” is our regression slope. Just like with a normal slope, it represents the change in y for every change in x. If <span class="math inline">\(b_1\)</span> = 1, then our predicted y value goes up by 1 every time x (our independent variable) goes up by 1. If <span class="math inline">\(b_1\)</span> = 0.5, then our predicted y value goes up by half a unit for every unit increase in x.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/field1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="Two panels of lines. On the left, two lines share an intercept but have opposite slopes. On the right, three parallel lines have different intercepts."></p>
+</figure>
+</div>
+<p>On the left-hand image, you can see two lines that start at the same point on the y-axis. In other words, they have the same intercept. But the solid blue line has a positive slope and the dashed blue line has a negative slope. In the right-hand image, you can see three lines that each have different intercepts, but all have the same slope (or “gradient”).</p>
+<p>Once you’ve chosen some numbers for the slope and intercept, you’ll have a line. But with correlational data, you rarely have a perfect linear relationship between your two variables. We get cloudy lines because our variables merely correlate with each other. Let’s look at the Quentin Tarantino Tomatometer scores from earlier.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/qt_over_time.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="A scatterplot showing the relationship between tomatometer scores and time."></p>
+</figure>
+</div>
+<p>I’ve plotted the “best fitting” regression line. It’s the line that comes as close as possible to all the data points. I’ve chosen a slope/intercept combo that minimizes the distance between the regression line and each data point as much as possible.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/qt_resids.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="A scatterplot with regression residuals marked in red."></p>
+</figure>
+</div>
+<p>The mismatch (or distance) between the regression line and each point is called a residual (i.e., a “leftover”). Some really clever people figured out how to derive the perfect intercept/slope combo that jointly minimize the <strong>squared</strong> residual between each point and the regression line. That’s why the particular form of regression we’re learning in this course is called “ordinary least squares regression”. We’re deriving a line (i.e., a slope/intercept combo) that minimizes the squared residuals between our data and our regression line.</p>
+<p>Recall that, <span class="math inline">\(\hat{y}=b_0+xb_1\)</span>, which reads as something like “predicted y equals the intercept plus slope for every x.” All the <span class="math inline">\(\hat{y}\)</span>s that result from all possible xs you could plug in form the regression line. You could add the residual (or “error”) to each equation and get y itself: <span class="math inline">\(y = b_0+xb_1+error\)</span>. Basically, you take the predictions of the regression line (all the <span class="math inline">\(\hat{y}\)</span>s), and add the gap between the line and the actual data to get y itself. These errors are often symbolized with <span class="math inline">\(\epsilon\)</span>, the lower-case Greek letter epsilon. Thus, <span class="math inline">\(y = b_0+xb_1+\epsilon\)</span>, each observation, y, is equal to the regression equation (<span class="math inline">\(b_0+xb_1\)</span>) plus whatever the regression equation missed (<span class="math inline">\(\epsilon\)</span>).</p>
+<p>If the slope equals 0 in a regression model, then the line will be flat. The dependent variable does not go up or down in response to changes in the independent variable. This corresponds to a correlation of zero between the two variables. If there is a positive association between the two variables, then the slope will be greater than 0. The line will be sloped upward, getting higher when you go from left to right. If there is a negative association between the two variables, then the slope will be less than 0. The line will slope downward when you scan from left to right.</p>
+<p>The “best fitting” regression line in the figure above is <span class="math inline">\(\hat{y} = 89.49 + x(-0.42)\)</span>.</p>
+<p>This means that, when Quentin Tarantino first started directing (and x = 0), the best prediction you could make (based on the present data) is that his Tomatometer score would be 89.49. For every year afterwards (every time x goes up by 1), we lower our predicted Tomatometer score by 0.42. That’s almost half a Tomatometer point lost each year!</p>
+<p>What is our prediction when Tarantino is 5 years into his film career?</p>
+<p><span class="math display">\[
+89.49 + 5(-0.42) = 87.39
+\]</span></p>
+<p>What if he’s 10 years into his film career?</p>
+<p><span class="math display">\[
+89.49 + 10(-0.42) = 85.29
+\]</span></p>
+<p>What if he’s been making films for 100 years?</p>
+<p><span class="math display">\[
+89.49 + 100(-0.42) = 47.49
+\]</span></p>
+<p>You see, it takes Quentin Tarantino a whole century to be as bad as M. Night Shyamalan.</p>
+<p>Well, actually, we can’t necessarily say that. Our regression equation, as a whole, gives us the best possible predictions that we can make with the data on hand. It’s best not to extrapolate too far outside of the data we actually have (i.e., late 20th and early 21st century).</p>
+<p>The parameters of the regression equation (the slope and intercept) might appear extremely small or extremely large, but you still have to worry about sample size. Small samples are pesky that way, and give us misleading results that don’t align with the population they’re drawn from. That’s why we test the parameters of a regression model for statistical significance. For each parameter, we start by hypothesizing that it is actually equal to zero. (This is just null hypothesis significance testing like we’ve been doing all along.) We then calculate how probable it is that we observe a value as high or higher (in absolute value) as the one we did when you assume the null hypothesis is true. We use the <em>t</em>-distribution to calculate these probabilities.</p>
+<p>The intercept in the model above is equal to 89.49, <em>t</em>(8) = 19.22, <em>p</em> &lt; .001. This means that the intercept probably isn’t zero. Usually, in a regression model, the intercept isn’t really what we’re interested in testing. In this context, a statistically significant (different from zero) intercept just means that Quentin Tarantino didn’t start off making awful movies (like literal 0 out of 100 Tomatometer scores, he’s not Tommy Wiseau!).</p>
+<p>The slope is usually what we’re more interested in. The slope in the current regression model was -0.42, <em>t</em>(8) = -1.40, <em>p</em> = .198. So, the slope was negative, but it wasn’t so negative (relative to the sample size) that we can conclude that it is definitely lower than zero. If we were to repeat this “study” a few times, with a similar sample size, we might very well see regression slopes close to 0, or even some positive ones.</p>
+<p>Just like with the correlation analysis above on Tarantino’s Tomatometer scores, we see a negative trend, but we don’t have enough evidence to conclude that there really is a negative relationship between the quality of Tarantino’s movies and the amount of time he’s been making movies. We can’t reject the null hypothesis. We can’t conclude that he’s been getting worse (or better) over time.</p>
+<p>In fact, you might have noticed something odd. The correlation between Tarantino’s Tomatometer scores and the number of years he’s been making movies is -0.44. That’s different from the regression slope relating those two variables, -0.42. And yet, when I do a <em>t</em>-test on the correlation coefficient and on the regression slope, I get the same <em>t</em>-value (-1.40), the same degrees of freedom (8) and the same <em>p</em>-value (.198).</p>
+<p>What gives? Well, for simple linear regression, the regression slope is just a re-scaled version of the correlation between the two variables. If the regression slope is statistically significant, then so is the correlation coefficient.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/unmasking.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="A meme of Fred (from Scooby-Doo) unmasking the regression slope to find that it was Pearson's r the whole time."></p>
+</figure>
+</div>
+<p>In fact, the equation for the regression slope that minimizes the squared residuals is just the correlation coefficient multiplied by the ratio of the standard deviations of the two variables. In other words, it’s just the correlation coefficient re-scaled.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/slope_equation.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="The equation for a simple linear regression slope"></p>
+</figure>
+</div>
+<p>If you were to flip your dependent and independent variables around, so that you’re using Quentin Tarantino’s Tomatometer scores to predict which year each movie was made, the regression slope would change. You’d multiply the correlation between the two by <span class="math inline">\(\frac{s_x}{s_y}\)</span> instead of <span class="math inline">\(\frac{s_y}{s_x}\)</span>. It’s still the same correlation though. It would have the same <em>t</em>-value, degrees of freedom, and <em>p</em>-value.</p>
+<p>Why am I harping on this? Well, ultimately because I think it’s cool. You might not though, so here’s another reason: People mistake correlation and regression coefficients (or slopes) as signs of causality, as if the independent variable <em>causes</em> the dependent variable. Correlation and regression analyses absolutely do not provide any evidence of a causal link between variables on their own.</p>
+<p>And I once saw a guy at an academic conference make this mistake. Someone in the audience asked, “How do you know your independent variable is causing your dependent variable? Why not the other way around?” The presenter responded, “Because when you rerun the regression equations with the variables flipped, they are no longer statistically significant.”</p>
+<p>At best, there was a misunderstanding or the presenter misspoke. To me, though, it just sounded like a lie. What the presenter said isn’t mathematically possible.</p>
+<section id="assumptions-of-simple-linear-regression" class="level3" data-number="4.2.1">
+<h3 data-number="4.2.1" class="anchored" data-anchor-id="assumptions-of-simple-linear-regression"><span class="header-section-number">4.2.1</span> Assumptions of simple linear regression</h3>
+<p>The first two assumptions for simple linear regression are the same as for correlation. The third one <strong><em>technically</em></strong> is an assumption of nearly all the tests covered in this book, so I’m going to elaborate a lot on it. It’s very important.</p>
+<ol type="1">
+<li><strong>The relationship between the variables is linear</strong></li>
+<li><strong>There are no outliers in the data</strong></li>
+<li><strong>The residuals are normally distributed</strong></li>
+</ol>
+<p>For any point along the regression line, there might be a number of actual data points that the line is either close to or not so close to. The distances of all these points from the line are called residuals (or “errors”, <span class="math inline">\(\epsilon\)</span>). Simple linear regression assumes that these residuals are normally distributed. Even if you don’t even have data at every point along the x-axis, it’s assumed that, if you did, some data points would be close to the regression line, about 70% would be within one standard deviation of the regression line. About 95% of them would be within two standard deviations of the regression line. And so on.</p>
+<p>Like I said, this third assumption underlies almost every test covered in this book, so it bears elaboration.</p>
+<p>You know those poster display cases they have in stores? You can flip through the different posters?</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/poster.case.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="A poster display case in a store, with posters mounted on panels you can flip through"></p>
+</figure>
+</div>
+<p>I want you to imagine that we shut the case completely. All the posters’ right sides are now facing you.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/empty.case.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:10.0%" alt="The closed poster case seen from the side, forming a rectangle"></p>
+</figure>
+</div>
+<p>Now, I want you to imagine that this rectangular shape formed by the poster cases is a scatter plot. It has a y-axis (its height) and an x-axis (its width). You can plot some data on this:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/regression.case.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:10.0%" alt="A scatterplot drawn on the side of the closed poster case, with orange data points and a red regression line"></p>
+</figure>
+</div>
+<p>We have data points plotted with orange circles. The best fitting regression line is marked out in red. Now imagine that we can open up this poster case and look at each slice of the x-axis in isolation.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/early.case.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="An early poster panel showing one slice of the x-axis, with a red marker for the regression line and one data point"></p>
+</figure>
+</div>
+<p>You see a small cross-section of the data. You see where the regression line runs through this slice of the x-axis and the one data point that happened to be on this part of the x-axis.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/mid.case.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="A poster panel from the middle of the case, with the red regression marker higher up"></p>
+</figure>
+</div>
+<p>As you flip through the posters, the red marker for the regression line gets higher and higher. That’s because the regression line has a positive slope. As x increases, so does y. We also see that sometimes the data points at different areas along the x-axis are either above the regression line or below it. Remember, the distance between each data point and the regression line is called a “residual”.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/late.case.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="A poster panel near the end of the case, with the red regression marker near the top"></p>
+</figure>
+</div>
+<p>When you finally get to the end of the poster case, there will be no more data. Technically, a regression line would keep going on into infinity, regardless of whether there was any actual data far out there along the x-axis.</p>
+<p>According to our new, third assumption, these residuals are normally distributed. This means that, if you kept collecting data <em>ad infinitum</em>, they would tend to be close to the regression line. The gaps between each data point and the regression line would have lengths that follow a normal distribution.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/early.case.dist.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="An early poster panel with a normal distribution of residuals centered on the red regression marker"></p>
+</figure>
+</div>
+<p><strong><em>THE REGRESSION LINE IS THE MEAN OF EACH OF THESE DISTRIBUTIONS.</em></strong> Doesn’t matter where that line actually is. Usually our actual data will be close to the mean (the red marker on all the poster boards). Sometimes it won’t be that close.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/mid.case.dist.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="A middle poster panel with a normal distribution of residuals centered on the red regression marker"></p>
+</figure>
+</div>
+<p>Like with a normal distribution, about 70% of all our actual residuals (and hypothetical/theoretical residuals) fall within 1 standard deviation of the mean. The remaining 30% are rarer. The further away from the regression line (the average), the less likely they are to occur.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/late.case.dist.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%" alt="A late poster panel with a normal distribution of residuals centered on the red regression marker"></p>
+</figure>
+</div>
+<p>It follows from this assumption that the distribution of residuals is symmetrical (i.e., not skewed). After all, the normal distribution is symmetrical.</p>
+<p>It also follows from this assumption that the standard deviation of the residuals is constant. Sometimes, in real (and messy!) data sets, the data become more dispersed as we move from the left-hand side of the x-axis to the right (or <em>vice versa</em>). That’s why many statistics books say that regression analyses assume a “constant error variance”. That just means the error variance (or standard deviation) stays the same, no matter where you are along the x-axis. Many writers like to whip out words like “homoskedasticity” to denote residuals with constant, unchanging variance. And they’ll use “heteroskedasticity” to denote residuals that become more (or less) dispersed depending on where you are along the x-axis. Since I’m not paid by the syllable, and I like to be understood, I’m going to go ahead and <strong><em>not</em></strong> use these terms. I just wanted you to recognize them if you saw them in other, lower quality statistics books.</p>
+<p>Many statistics books become confusing because each test seems to have its own unique set of assumptions, yet others have the same assumptions but stated in different terminology. Worse, they’ll end up saying that regression analysis has 4 assumptions even though 3 of those assumptions just follow from the “residuals normally distributed” assumption and, technically, there are way more than just 4 assumptions…</p>
+<p>Yes, if you peek under the mathematical hood of all this stuff, things get more complicated. I’m going as deep as necessary to get you started on your stats journey, but no deeper.</p>
+<p>I think you’ll find it very useful to memorize/internalize/bake-into-your-brain this assumption of normally distributed residuals. Later, you’ll see that most of the assumptions underlying statistical tests are straightforward consequences of this one rule.</p>
+</section>
+</section>
+<section id="statistical-tests-learned-so-far" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="statistical-tests-learned-so-far"><span class="header-section-number">4.3</span> Statistical tests learned so far</h2>
+<p>Below is a table of all the statistical tests/analyses we’ve learned so far:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 46%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>When to use</th>
+<th>Distribution / Requirements</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Single observation <em>z</em>-score</td>
+<td>You just want to know how likely (or unlikely) or how extraordinary (or average) a single observation is.</td>
+<td>Normal distribution. Population mean and population SD are known.</td>
+</tr>
+<tr class="even">
+<td>Group <em>z</em>-test</td>
+<td>You want to know whether a sample mean (drawn from a normal distribution) is higher or lower than a certain value (usually the population average)</td>
+<td>Normal distribution. Population mean and population SD are known.</td>
+</tr>
+<tr class="odd">
+<td>1 sample <em>t</em>-test</td>
+<td>You want to know whether a sample mean is different from a certain value (either 0 or the population average)</td>
+<td>Student’s <em>t</em>-distribution. Population mean is known, but not the population SD</td>
+</tr>
+<tr class="even">
+<td>Correlation</td>
+<td>Measuring the degree of co-occurrence between two continuous variables</td>
+<td>Linear relationship between variables, no outliers, normally distributed residuals.</td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./03-first-statistical-tests.html" class="pagination-link" aria-label="Baby's first statistical tests">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Baby’s first statistical tests</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./05-tests-or-models.html" class="pagination-link" aria-label="Are these statistical tests or prediction models?">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Are these statistical tests or prediction models?</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
