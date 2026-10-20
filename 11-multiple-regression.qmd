@@ -1,0 +1,181 @@
+# Multiple Regression
+
+Multiple regression is an extension of simple linear regression that allows more than one predictor to be included in a single model. Instead of asking whether one variable is related to an outcome, multiple regression asks how several predictors relate to an outcome simultaneously. This makes it possible to address more realistic research questions, where outcomes are rarely influenced by a single factor in isolation.
+
+At its core, a multiple regression model describes how an outcome variable Y is expected to change as one or more predictors change. 
+
+A multiple regression model includes an intercept and a coefficient (or "slope") for each predictor.
+
+The intercept represents the expected value of the outcome when all predictors are equal to zero, just like in simple linear regression. Whether this value is meaningful depends entirely on how the predictors are scaled and whether zero is a sensible reference point. In many cases, the intercept is included for mathematical completeness rather than substantive interpretation.
+
+Each coefficient represents the expected change in the outcome associated with a one-unit increase in that predictor, *while adjusting for the other predictors in the model*. This is the defining feature of multiple regression. Coefficients do not describe simple associations. Instead, they describe conditional relationships, reflecting what is unique about each predictor after shared variance has been accounted for.
+
+## A simple example
+
+Imagine a model predicting exam performance from hours studied and test anxiety. 
+
+$$
+\text{Exam Performance} = b_0 + b_1(\text{Hours Studied}) + b_2(\text{Test Anxiety}) + \epsilon
+$$
+
+Both predictors are related to exam scores, and they may also be related to each other. The slope for hours studied ($b_1$) reflects how exam performance is expected to change as study time increases for students with the same level of anxiety. Likewise, the slope for anxiety ($b_2$) reflects differences in exam performance among students who studied the same amount.
+
+This conditional framing is essential. Multiple regression does not tell us whether a predictor matters in general. It tells us whether a predictor matters *in the context of the other predictors in the model*.
+
+## Centering and Scaling Variables
+
+Remember when I said the intercept in a model usually doesn't have any inherent meaning? This is true when you leave all the variables in their original scale. The interpretation of regression coefficients depends heavily on how predictors are scaled. Two common transformations (centering and standardizing) are often used to improve interpretability or comparability.
+
+### Centering
+
+Centering a variable involves subtracting the mean from each value:
+
+$$
+X_{\text{centered}} = X - \bar{X}
+$$
+
+After centering, each value represents how far from the mean it is, expressed in the original units of the variable. Centering changes the location of a variable but not its scale. The distribution keeps the same shape and spread; it is simply shifted so that its mean is zero instead of its original value.
+
+Centering primarily affects the intercept ($b_0$) of a regression model. When predictors are centered, the intercept represents the expected value of the outcome when predictors are at their average levels, rather than at zero. This often makes the intercept more interpretable.
+
+Importantly, centering does not change the slope. A one-unit increase in a centered predictor still corresponds to the same one-unit increase in the original scale, and the expected change in the outcome is unchanged.
+
+### Scaling (Standardizing)
+
+Standardizing a variable goes one step further. Each value is converted to a z-score by subtracting the mean from each observation and dividing by the standard deviation:
+
+$$
+Z = \frac{X - \bar{X}}{SD_X}
+$$
+
+After standardization, each value represents how many standard deviations it is from the mean.
+
+Standardizing changes both the location and the scale of a variable. The mean becomes zero, and the standard deviation becomes one. While the overall shape of the distribution is preserved, the units are fundamentally different.
+
+Standardization is especially useful when predictors are measured on different scales. A slope associated with a standardized predictor represents the expected change in the outcome associated with a one-standard-deviation increase in that predictor.
+
+When the outcome is also standardized, slopes represent standardized changes in the outcome, making them comparable across predictors.
+
+When all variables in a regression model are standardized, the coefficients can be interpreted in relation to partial correlations, which I'll elaborate on in the sections below.
+
+## "Correlation" as "Shared Variance"
+
+Suppose the correlation between two variables, $X$ and $Y$, is $r = 0.5$. The correlation coefficient describes the strength of the linear relationship between $X$ and $Y$. To translate this relationship into variance terms, we square the correlation:
+
+$$
+r^2 = 0.5^2 = 0.25
+$$
+
+This means that **25% of the variance in $X$ overlaps with variance in $Y$** (and vice versa). In other words, one quarter of the variability in each variable is shared between the two.
+
+It is important to interpret this carefully. Saying that 25% of the variance “overlaps” does not imply causation or explain *why* the variables are related. It simply reflects the degree to which knowing one variable reduces uncertainty about the other.
+
+## Partial Correlation, Conceptually 
+
+Partial correlation is the association between two variables when the effects of a third variable are calculated out, or *partialled out*. In this context, “partialled out” means that the variance shared with the third variable has been removed from both variables of interest. The resulting correlation reflects the relationship between the remaining, unique portions of the two variables.
+
+![](<img/partial correlation.png>){fig-align="center" width="70%" fig-alt="A diagram illustrating partial correlation: the overlap between two variables after removing the variance each shares with a third variable"}
+
+Now imagine if we have 3 variables. Y is our dependent variable. X is our first independent variable and Z is our second independent variable.
+
+![](<img/venn diagrams.png>){fig-align="center" width="70%" fig-alt="Venn diagrams showing the outcome Y overlapping with predictor X and with predictor Z"}
+
+X correlates with Y to some degree, we'll call this $r_{xy}$.
+
+Z also correlates with Y, we'll call this correlation $r_{zy}$.
+
+![](<img/3 variable venn.png>){fig-align="center" width="70%" fig-alt="A three-circle Venn diagram of X, Y, and Z, with the region shared by all three shaded black"}
+
+In multiple regression, we no longer examine the overlap or bivariate correlation between one variable and the outcome variable, $r_{xy}$, but the partial correlation between that variable and Y *after adjusting for all other independent variables in the model*.
+
+In the Venn diagram above, for instance, the total bivariate correlation between X and Y is represented by the orange and black shape where the yellow and red circles intersect. The partial correlation between X and Y while controlling for Z ($r_{xy\cdot z}$) is represented by just the orange part of that shape, not the black part where Z also intersects with X and Y.
+
+![](<img/orange minus black.png>){fig-align="center" width="70%" fig-alt="The X and Y overlap from the Venn diagram, with the part also shared with Z removed, leaving the partial correlation of X and Y"}
+
+Likewise, the bivariate correlation between Z and Y, $r_{zy}$, is represented by the purple and black shape made up where the red and blue circles intersect. The partial correlation between Z and Y (while adjusting for X, $r_{zy\cdot x}$) is represented by just the purple part of that shape.
+
+![](<img/purble minus black.png>){fig-align="center" width="70%" fig-alt="The Z and Y overlap from the Venn diagram, with the part also shared with X removed, leaving the partial correlation of Z and Y"}
+
+### Partial correlation *almost* equals the standardized regression coefficient
+
+When all variables are standardized, the standardized regression coefficient and the partial correlation are closely related, but they are not the same number. As you'll see in the equations below, they share the same numerator. They differ only in their denominators.
+
+The standardized regression coefficient reflects the **unique predictive contribution** of a predictor to the outcome, while the partial correlation reflects the **unique shared variance** between the predictor and the outcome after accounting for other variables.
+
+You can think of standardized coefficients as **scaled versions of the corresponding partial correlations**. They are not identical, but they tend to move together and often tell a similar story. For this reason, standardized coefficients remain useful analogies for understanding conditional relationships, even when they are not exact measures of partial correlation.
+
+## Partial Correlation, Mathematically
+
+$$
+\Large
+r_{xy\cdot z} \;=\; \frac{r_{xy} - r_{xz}r_{yz}}{\sqrt{\left(1-r_{xz}^2\right)\left(1-r_{yz}^2\right)}}
+$$
+
+Where:
+
+- $r_{xy\cdot z}$ is the **partial correlation** between $x$ and $y$ *adjusting for* $z$.
+- $r_{xy}$ is the **bivariate correlation** between $x$ and $y$.
+- $r_{xz}$ is the **bivariate correlation** between $x$ and $z$.
+- $r_{yz}$ is the **bivariate correlation** between $y$ and $z$.
+
+This conceptual overlap pattern is mirrored in the equation for the partial correlation. Notice that the numerator subtracts out the part of the $x$-$y$ relationship that is attributable to their shared relationships with $z$ (the $r_{xz}r_{yz}$ term). The denominator rescales what is left so that the result is still a correlation, bounded between $-1$ and $+1$.
+
+## Regression coefficients, Mathematically
+
+$$
+\Large
+b_{x} \;=\; \frac{r_{xy} - r_{xz}r_{yz}}{1 - r_{xz}^2}
+$$
+
+Where:
+
+- $b_x$ is the **standardized regression coefficient** for predictor $x$ when predicting $y$ while adjusting for $z$.
+- $r_{xy}$ is the **bivariate correlation** between $x$ and $y$.
+- $r_{xz}$ is the **bivariate correlation** between $x$ and $z$.
+- $r_{yz}$ is the **bivariate correlation** between $y$ and $z$.
+
+This equation closely resembles the formula for the partial correlation between $x$ and $y$ adjusting for $z$. In both cases, the numerator subtracts out the portion of the $x$-$y$ relationship that is attributable to their shared association with $z$. This reflects the idea of removing overlapping variance before assessing the relationship of interest.
+
+The difference lies in the denominator. For the regression coefficient, the denominator adjusts only for the variance in $x$ that overlaps with $z$. As a result, the coefficient reflects the **unique predictive contribution of $x$ to $y$**, rather than the amount of variance that $x$ and $y$ uniquely share. This distinction explains why standardized regression coefficients and partial correlations are closely related but not identical.
+
+## New Assumption: No multicollinearity
+
+Simple linear regression has relatively few assumptions about the predictors. Once we move to **multiple regression**, however, a *new* assumption is introduced: the predictors must not be excessively redundant with one another.
+
+Importantly, this does **not** mean that predictors must be completely unrelated. In fact, multiple regression is often used precisely because predictors are expected to be intercorrelated to some degree. The assumption is not “no correlation” among predictors, but **no extreme correlation** among them.
+
+**Multicollinearity** refers to situations in which one or more predictors are **highly correlated** with one another. As multicollinearity increases, it becomes more difficult to isolate the unique contribution of any single predictor to the outcome variable.
+
+When predictors share substantial overlap, regression coefficients become harder to interpret. Estimates may be unstable, standard errors can inflate, and small changes in the data can lead to noticeable changes in coefficient values. In other words, multicollinearity primarily affects **interpretation and precision**, not overall model fit.
+
+### Quantifying Multicollinearity with the Variance Inflation Factor (VIF)
+
+A common diagnostic for multicollinearity is the **Variance Inflation Factor (VIF)**. The VIF for a given predictor reflects the extent to which that predictor can be accurately predicted from *all other predictors in the model*.
+
+Conceptually, VIF is based on the proportion of variance in a “current predictor” that is explained by the remaining predictors.
+
+$$
+\Large
+\text{VIF}_X = \frac{1}{1 - R_X^2}
+$$
+
+Here, $R_X^2$ is obtained by regressing predictor $X$ on all other predictors in the model.
+
+- When $R_X^2$ is close to 0, the predictor shares little variance with the others, and the VIF will be close to 1.
+- When $R_X^2$ is close to 1, the predictor is largely redundant with the others, and the VIF will be large.
+
+A VIF of **1** indicates no multicollinearity for that predictor. As a common rule of thumb, VIF values above **10** are taken to indicate high multicollinearity, though the practical importance of this depends on the research question and the purpose of the model.
+
+## From lines to planes
+
+In simple linear regression, we're using a straight line to make predictions. It's a fundamentally 2 dimensional space we're working in. With multiple regression, we're working in a space with more than 2 dimensions. Let's take the simple case of 2 continuous predictors with 1 continuous outcome variable.
+
+![](<img/multi reg plane.png>){fig-align="center" width="70%" fig-alt="A 3D scatterplot of album sales by radio airplay and advertising budget, with a flat regression plane through the data"}
+
+In the image above, album sales are plotted in a 3d space. Imagine a snow globe that's shaped like a cube rather than a globe. Each flake of snow is a data point. You shake the globe and you get a scatter plot, but in 3 dimensions instead of 2. Now imagine that one side of the cube represents 1 predictor variable and another side of the cube represents the other.
+
+In the example above, those sides represent the amount of radio air time the albums had and the money spent on advertising them. On the left side of the cube, radio play can range from 0 per week to 70. On the right side, advertisement budget can range from \$0 to \$2,500,000. Every album had some amount of airplay *and* some amount of money spent on advertisement. Each data point (like a snowflake in a snow cube) will rest in just the right spot inside to align with both properties. 
+
+Remember how in simple linear regression (with only one predictor) all of our predictions were represented with one straight line in 2d space? In this new scenario, our predictions are represented by a flat plane in 3d space. This is like a flat sheet of paper oriented in space. For any two points along the radio play and advertisement axes, there's exactly one spot on this piece of paper that represents our regression model's prediction for album sales.
+
+Things get really fun (in my opinion at least) when you try to think about more complex models. For instance, a model with 3 continuous predictors would be represented by a "hyper plane" in 4d space.

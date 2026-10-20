@@ -1,0 +1,8 @@
+/.quarto/
+/_book/
+.Rproj.user
+.DS_Store
+.Rhistory
+.RData
+.httr-oauth
+.quarto

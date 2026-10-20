@@ -1,0 +1,25 @@
+project:
+  type: book
+
+book:
+  title: "The Model with a Thousand Faces"
+  author: "Mark LaCour"
+  search: true
+  chapters:
+    - index.qmd
+    - 01-variables-distributions.qmd
+    - 02-probability-hypothesis-testing.qmd
+    - 03-first-statistical-tests.qmd
+    - 04-correlation-regression.qmd
+    - 05-tests-or-models.qmd
+    - 06-differences-between-means.qmd
+    - 07-repeated-measures.qmd
+    - 08-factorial-anova.qmd
+    - 09-general-linear-model.qmd
+    - 10-chi-square-fisher.qmd
+    - 11-multiple-regression.qmd
+    - 12-glm-moderation.qmd
+
+format:
+  html:
+    theme: cosmo
